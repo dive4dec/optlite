@@ -1,20 +1,16 @@
 {
-  "name": "@dive4dec/optlite",
+  "name": "v6-frontend",
   "version": "1.0.0",
   "description": "OPT v6",
   "main": "bundle.js",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/dive4dec/optlite "
-  },
+  "repository": "https://github.com/pgbovine/OnlinePythonTutor",
   "license": "BSD-3-Clause",
   "scripts": {
-    "webpack": "webpack --devtool sourcemap --progress --colors --watch",
+    "build": "webpack --devtool sourcemap --progress --colors --watch",
     "start:dev": "webpack-dev-server -d",
     "production-build": "rm -f build/* && webpack && python add_cache_busting_query_strings.py"
   },
   "dependencies": {
-    "c-promise2": "^0.13.12",
     "css-loader": "^0.28.11",
     "css-selector-tokenizer": "^0.7.0",
     "d3": "^3.5.6",
@@ -26,7 +22,6 @@
     "puppeteer": "^1.20.0",
     "script-loader": "^0.7.2",
     "style-loader": "^0.21.0",
-    "testmytutor2": "^1.0.0",
     "ts-loader": "^3.5.0",
     "typescript": "^2.1.6",
     "url-loader": "^1.0.1",
@@ -45,13 +40,5 @@
     "@types/qtip2": "^2.2.31",
     "@types/requirejs": "^2.1.33",
     "webpack-dev-server": "^2.11.5"
-  },
-  "bugs": {
-    "url": "https://github.com/dive4dec/optlite/issues"
-  },
-  "homepage": "https://github.com/dive4dec/optlite#readme",
-  "directories": {
-    "test": "tests"
-  },
-  "author": ""
+  }
 }

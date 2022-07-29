@@ -13,8 +13,6 @@
 
 // for TypeScript
 declare var diff_match_patch: any;
-declare var codeopticonUsername: string; // FIX later when porting Codeopticon
-declare var codeopticonSession: string;  // FIX later when porting Codeopticon
 require('./lib/diff_match_patch.js');
 require('./lib/jquery.ba-dotimeout.min.js');
 
@@ -670,85 +668,9 @@ jsonp(False, out_s.getvalue())
     this.traceCache = [];
   }
 
-  setSurveyHTML() {
-    // use ${this.userUUID} within the string ...
-    var survey_v14 = `
-    <p style="font-size: 9pt; margin-top: 12px; margin-bottom: 15px; line-height: 150%;">
-
-    Help improve this tool by completing a <a style="font-size: 10pt; font-weight: bold;" href="https://docs.google.com/forms/d/e/1FAIpQLSfQJP1ojlv8XzXAvHz0al-J_Hs3GQu4XeblxT8EzS8dIzuaYA/viewform?entry.956368502=${this.userUUID}" target="_blank">short user survey</a>
-    </p>`;
-    $('#surveyPane').html(survey_v14);
-  }
 } // END class AbstractBaseFrontend
 
 
-// removed donation link on 2019-03-26
-//    Keep this tool free by making a <a style="font-size: 10pt; font-weight: bold;" href="http://pgbovine.net/support.htm" target="_blank">small donation</a> (PayPal, Patreon, credit/debit card)
-
-
-/* For survey questions. Versions of survey wording:
-
-[see ../../v3/js/opt-frontend-common.js for older versions of survey wording - v1 to v7]
-
-v8: (deployed on 2016-06-20) - like v7 except emphasize the main usage survey more, and have the over-60 survey as auxiliary
-const survey_v8 = '\n\
-<p style="font-size: 10pt; margin-top: 10px; margin-bottom: 15px; line-height: 175%;">\n\
-<span>Support our research and keep this tool free by <a href="https://docs.google.com/forms/d/1-aKilu0PECHZVRSIXHv8vJpEuKUO9uG3MrH864uX56U/viewform" target="_blank">filling out this user survey</a>.</span>\n\
-<br/>\n\
-<span style="font-size: 9pt;">If you are <b>at least 60 years old</b>, please also fill out <a href="https://docs.google.com/forms/d/1lrXsE04ghfX9wNzTVwm1Wc6gQ5I-B4uw91ACrbDhJs8/viewform" target="_blank">our survey about learning programming</a>.</span>\n\
-</p>'
-
-v9: (deployed on 2016-08-14, taken down 2016-12-05) - only put up the "older adults" survey except generalize it to ALL ages, take down the OPT usage survey for now
-const survey_v9 = '\n\
-<p style="font-size: 10pt; margin-top: 10px; margin-bottom: 15px; line-height: 175%;">\n\
-<span>Support our research and keep this tool free by <a href="https://docs.google.com/forms/d/1lrXsE04ghfX9wNzTVwm1Wc6gQ5I-B4uw91ACrbDhJs8/viewform" target="_blank"><b>filling out this user survey</b></a>.</span>\n\
-</p>'
-
-v10: (deployed on 2016-12-05) - survey of how native languages affects learning programming
-     (taken down on 2017-07-28)
-[see survey_v10 variable above]
-
-    // use ${this.userUUID} within the string ...
-    var survey_v10 = '\n\
-    <p style="font-size: 11pt; margin-top: 12px; margin-bottom: 15px; line-height: 150%;">\n\
-    <span><span style="color: #e93f34;">Support our research and keep this tool free</span> by filling out this <a href="https://docs.google.com/forms/d/e/1FAIpQLSe48NsBZPvu1hrTBwc8-aSic7nPSxpsxFqpUxV5AN4LwnyJWg/viewform?entry.956368502=';
-    survey_v10 += this.userUUID;
-    survey_v10 += '" target="_blank">survey on how your native spoken language affects how you learn programming</a>.</span></p>';
-
-    $('#surveyPane').html(survey_v10);
-
-v11: labinthewild python debugging experiment (deployed on 2017-07-28, taken down on 2017-09-12)
-    var survey_v11 = `<p style="font-size: 10pt; margin-top: 12px; margin-bottom: 15px; line-height: 150%;">
-                        <span>
-                          <span style="color: #e93f34;">Support our research and practice Python</span>
-                          by trying our new
-                          <a target="_blank" href="http://www.labinthewild.org/studies/python_tutor/">debugging skill test</a>!`;
-
-v12: simplified demographic survey which is a simplified hybrid of the v8 general usage survey and the v10 native language survey (deployed on 2017-09-12)
-
-    // use ${this.userUUID} within the string ...
-    var survey_v12 = '\n\
-    <p style="font-size: 10pt; margin-top: 12px; margin-bottom: 15px; line-height: 150%;">\n\
-    <span>Support our research and keep this tool free by <a href="https://docs.google.com/forms/d/e/1FAIpQLSfQJP1ojlv8XzXAvHz0al-J_Hs3GQu4XeblxT8EzS8dIzuaYA/viewform?entry.956368502=';
-    survey_v12 += this.userUUID;
-    survey_v12 += '" target="_blank"><b>filling out this short user survey</b></a>.</span></p>';
-
-v13: same as v12 except with slightly different wording, and adding a
-call for donations (deployed on 2017-12-27)
-
-    // use ${this.userUUID} within the string ...
-    var survey_v13 = '\n\
-    <p style="font-size: 10pt; margin-top: 12px; margin-bottom: 15px; line-height: 150%;">\n\
-    <div style="margin-bottom: 12px;">Keep this tool free for everyone by <a href="http://pgbovine.net/support.htm" target="_blank"><b>making a small donation</b></a> <span style="font-size: 8pt;">(PayPal, Patreon, credit/debit card)</span></div>\
-    <span>Support our research by completing a <a href="https://docs.google.com/forms/d/e/1FAIpQLSfQJP1ojlv8XzXAvHz0al-J_Hs3GQu4XeblxT8EzS8dIzuaYA/viewform?entry.956368502=';
-    survey_v13 += this.userUUID;
-    survey_v13 += '" target="_blank"><b>short user survey</b></a></span></p>';
-
-
-v14: very similar to v13 (deployed on 2018-03-11)
-[see the survey_v14 variable]
-
-*/
 
 // misc utilities:
 

@@ -48,10 +48,9 @@ require('../css/opt-live.css');
 
 import { OptFrontend } from './opt-frontend';
 import { ExecutionVisualizer, assert, brightRed, darkArrowColor, lightArrowColor, SVG_ARROW_POLYGON, htmlspecialchars } from './pytutor';
-import { eureka_survey, eureka_prompt, eureka_survey_version } from './surveys';
 import { allTabsRE } from './opt-frontend';
 import { asyncRun } from './pyodide/runner';
-import { privacyAndEndingHTML, nullTraceErrorLst, unsupportedFeaturesStr } from './footer-html';
+import { nullTraceErrorLst, unsupportedFeaturesStr } from './footer-html';
 import * as d3 from 'd3';
 // just punt and use global script dependencies
 require("script-loader!./lib/ace/src-min-noconflict/ace.js");
@@ -137,31 +136,6 @@ export class OptLiveFrontend extends OptFrontend {
     $("#jmpStepFwd").click(() => {
       if (this.myVisualizer) { this.myVisualizer.stepForward(); }
     });
-
-    // taken down on 2019-10-19 because i really haven't looked at the data for a long time; see surveys.ts
-    // put eureka_survey into #eurekaSurveyPane so that it's highly visible
-    /*
-    $("#eurekaSurveyPane").append(eureka_survey);
-    var that = this;
-    $('.surveyBtnBig').click(function(e) {
-      var myArgs = that.getAppState();
-      var buttonPrompt = $(this).html();
-      var res = prompt(eureka_prompt);
-      // don't do ajax call when Cancel button is pressed
-      // (note that if OK button is pressed with no response, then an
-      // empty string will still be sent to the server)
-      if (res !== null) {
-        (myArgs as any).surveyVersion = eureka_survey_version;
-        (myArgs as any).surveyQuestion = buttonPrompt;
-        (myArgs as any).surveyResponse = res;
-        (myArgs as any).opt_uuid = that.userUUID;
-        (myArgs as any).session_uuid = that.sessionUUID;
-        $.get('eureka_survey.py', myArgs, function(dat) {});
-      }
-    });
-    */
-
-    $("#footer").append(privacyAndEndingHTML);
   }
 
   demoModeChanged() {

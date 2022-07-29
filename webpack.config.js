@@ -1,6 +1,6 @@
 var webpack = require('webpack');
-var WebpackOnBuildPlugin = require('on-build-webpack');
-var exec = require('child_process').exec;
+// var WebpackOnBuildPlugin = require('on-build-webpack');
+// var exec = require('child_process').exec;
 
 module.exports = {
     plugins: [
@@ -53,17 +53,8 @@ module.exports = {
     },
 
     entry: {
-        'cs1302visualize':"./js/visualize.ts",
-        'cs1302_serverless':"./js/serverless.ts",
         'visualize': "./js/visualize.ts",
-        'recorder': "./js/recorder.ts",
-        'render-trace': "./js/render-trace.ts",
         'opt-live': "./js/opt-live.ts",
-        'iframe-embed': "./js/iframe-embed.ts",
-        'index': "./js/index.ts",
-        'composingprograms': "./js/composingprograms.ts",
-        'csc108h': "./js/csc108h.ts",
-        'pytutor-embed': "./js/pytutor-embed.ts",
     },
 
     output: {

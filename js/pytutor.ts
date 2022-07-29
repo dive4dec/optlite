@@ -3907,7 +3907,7 @@ class CodeDisplay {
         }
       } else if (lang === 'cpp') {
         if (this.owner.params.embeddedMode) {
-          this.domRoot.find('#langDisplayDiv').html(CPP_VERSION);
+          this.domRoot.find('#langDisplayDiv').html('C++ (gcc 4.8, C++11)');
         } else {
           this.domRoot.find('#langDisplayDiv').html('C++ (gcc 4.8, C++11)<br/><font color="#e93f34">EXPERIMENTAL!</font> <a href="https://github.com/pgbovine/OnlinePythonTutor/blob/master/unsupported-features.md#c-and-c-unsupported-features" target="_blank">known limitations</a>');
         }

@@ -5,53 +5,25 @@
 import { OptFrontendSharedSessions, TogetherJS } from './opt-shared-sessions';
 import { assert, htmlspecialchars } from './pytutor';
 import { OptTestcases, redSadFace, yellowHappyFace } from './opt-testcases';
-import * as exampleLinks from './example-links';
-import { footerHtml } from './footer-html';
-import { eureka_survey, eureka_prompt, eureka_survey_version } from './surveys';
 
 require('./lib/jquery-3.0.0.min.js');
 require('./lib/jquery.qtip.js');
 require('../css/jquery.qtip.css');
 
 const {
-  PYTHON3_VERSION,
-  PYTHON_ANACONDA_VERSION,
-  JAVA_VERSION,
-  RUBY_VERSION,
   PYODIDE_VERSION,
-  C_VERSION,
-  CPP_VERSION,
 } = require('./common/version.js')
 
 const {
-  PYTHON3_VALUE,
-  PYTHON_ANACONDA_VALUE,
-  JAVA_VALUE,
-  RUBY_VALUE,
   PYODIDE_VALUE,
-  C_VALUE,
-  CPP_VALUE,
 } = require('./common/value.js')
 
 let versions = [
-  PYTHON3_VERSION,
-  PYTHON_ANACONDA_VERSION,
-  JAVA_VERSION,
-  RUBY_VERSION,
-  PYODIDE_VERSION,
-  C_VERSION,
-  CPP_VERSION,
+  PYODIDE_VERSION
 ];
 
-
 let values = [
-  PYTHON3_VALUE,
-  PYTHON_ANACONDA_VALUE,
-  JAVA_VALUE,
-  RUBY_VALUE,
-  PYODIDE_VALUE,
-  C_VALUE,
-  CPP_VALUE,
+  PYODIDE_VALUE
 ];
 
 // for TypeScript
@@ -249,41 +221,18 @@ export class OptFrontendWithTestcases extends OptFrontendSharedSessions {
 
   finishSuccessfulExecution() {
     super.finishSuccessfulExecution(); // do this first
-    if (this.activateSyntaxErrorSurvey) {
-      this.experimentalPopUpSyntaxErrorSurvey();
-    }
+    // if (this.activateSyntaxErrorSurvey) {
+    //   this.experimentalPopUpSyntaxErrorSurvey();
+    // }
     this.prevExecutionExceptionObjLst = []; // reset this since there was no compile-time error
 
-    if (this.activateRuntimeErrorSurvey) {
-      this.popupRuntimeErrorSurvey();
-    }
+    // if (this.activateRuntimeErrorSurvey) {
+    //   this.popupRuntimeErrorSurvey();
+    // }
     this.prevExecutionRuntimeErrorMsg = null; // clear this now and populate it in updateOutputCallbackFunc
     this.prevExecutionRuntimeErrorLine = null;
     this.prevExecutionRuntimeErrorCode = null;
 
-    // put eureka_survey below #codAndNav so that it's highly visible:
-    if (this.activateEurekaSurvey) {
-      this.myVisualizer.domRoot.find('#codAndNav').append(eureka_survey);
-      this.myVisualizer.domRoot.find('#codAndNav #eureka_survey').css('margin-top', '30px'); // leave some extra space
-      var that = this;
-      $('.surveyBtnBig').click(function (e) {
-        var myArgs = that.getAppState();
-        var buttonPrompt = $(this).html();
-        var res = prompt(eureka_prompt);
-        // don't do ajax call when Cancel button is pressed
-        // (note that if OK button is pressed with no response, then an
-        // empty string will still be sent to the server)
-        if (res !== null) {
-          (myArgs as any).surveyVersion = eureka_survey_version;
-          (myArgs as any).surveyQuestion = buttonPrompt;
-          (myArgs as any).surveyResponse = res;
-          (myArgs as any).opt_uuid = that.userUUID;
-          (myArgs as any).session_uuid = that.sessionUUID;
-          // $.get('eureka_survey.py', myArgs, function(dat) {});
-          this.sendLogRequest('eureka_survey.py', myArgs);
-        }
-      });
-    }
   }
 
   // called whenever myVisualizer.updateOutput() is called to update the visualization;
@@ -305,434 +254,400 @@ export class OptFrontendWithTestcases extends OptFrontendSharedSessions {
   }
 
   // created on 2015-04-18
-  experimentalPopUpSyntaxErrorSurvey() {
-    if (this.prevExecutionExceptionObjLst.length > 0) {
-      // work with the most recent entry
-      var prevExecutionExceptionObj = this.prevExecutionExceptionObjLst[this.prevExecutionExceptionObjLst.length - 1];
-      var offendingLine = prevExecutionExceptionObj.killerException.line;
+  // experimentalPopUpSyntaxErrorSurvey() {
+  //   if (this.prevExecutionExceptionObjLst.length > 0) {
+  //     // work with the most recent entry
+  //     var prevExecutionExceptionObj = this.prevExecutionExceptionObjLst[this.prevExecutionExceptionObjLst.length - 1];
+  //     var offendingLine = prevExecutionExceptionObj.killerException.line;
 
-      if (offendingLine === undefined) {
-        return; // get out early!
-      }
+  //     if (offendingLine === undefined) {
+  //       return; // get out early!
+  //     }
 
-      // if we've switched languages between the previous error and this
-      // run, then DON'T pop up a survey since the point is moot anyhow;
-      // there's no point in asking the question when the language has changed
-      var curState = this.getAppState();
-      if (prevExecutionExceptionObj.myAppState.py != curState.py) {
-        return;
-      }
+  //     // if we've switched languages between the previous error and this
+  //     // run, then DON'T pop up a survey since the point is moot anyhow;
+  //     // there's no point in asking the question when the language has changed
+  //     var curState = this.getAppState();
+  //     if (prevExecutionExceptionObj.myAppState.py != curState.py) {
+  //       return;
+  //     }
 
-      var bub = new SyntaxErrorSurveyBubble(this.myVisualizer, 'pyCodeOutputDiv');
+  //     var bub = new SyntaxErrorSurveyBubble(this.myVisualizer, 'pyCodeOutputDiv');
 
-      // destroy then create a new tip:
-      bub.destroyQTip();
-      $(bub.hashID).qtip({
-        show: {
-          ready: true, // show on document.ready instead of on mouseenter
-          delay: 0,
-          event: null,
-          effect: function () { $(this).show(); }, // don't do any fancy fading because it screws up with scrolling
-        },
-        hide: {
-          fixed: true,
-          event: null,
-          effect: function () { $(this).hide(); }, // don't do any fancy fading because it screws up with scrolling
-        },
+  //     // destroy then create a new tip:
+  //     bub.destroyQTip();
+  //     $(bub.hashID).qtip({
+  //       show: {
+  //         ready: true, // show on document.ready instead of on mouseenter
+  //         delay: 0,
+  //         event: null,
+  //         effect: function () { $(this).show(); }, // don't do any fancy fading because it screws up with scrolling
+  //       },
+  //       hide: {
+  //         fixed: true,
+  //         event: null,
+  //         effect: function () { $(this).hide(); }, // don't do any fancy fading because it screws up with scrolling
+  //       },
 
-        content: ' ', // can't be empty!
-        id: bub.domID,
-        position: {
-          my: bub.my,
-          at: bub.at,
-          adjust: {
-            x: 10,
-          },
-        },
-        style: {
-          classes: 'qtip-light',
-        }
-      });
+  //       content: ' ', // can't be empty!
+  //       id: bub.domID,
+  //       position: {
+  //         my: bub.my,
+  //         at: bub.at,
+  //         adjust: {
+  //           x: 10,
+  //         },
+  //       },
+  //       style: {
+  //         classes: 'qtip-light',
+  //       }
+  //     });
 
-      /*
-      var version = 'v3'; // deployed on 2015-09-08
-      var surveyBubbleHTML = '<div id="syntaxErrBubbleContents">\
-                                <div id="syntaxErrHeader">You just fixed the following error:</div>\
-                                <div id="syntaxErrCodeDisplay"></div>\
-                                <div id="syntaxErrMsg"></div>\
-                                <div id="syntaxErrQuestion">\
-                                  Please help us improve error messages for future users.\
-                                   If you think the above message wasn\'t helpful, what would have been the best message for you here?<br/>\
-                                   <input type="text" id="syntaxErrTxtInput" size=60 maxlength=150/><br/>\
-                                   <button id="syntaxErrSubmitBtn" type="button">Submit</button>\
-                                   <button id="syntaxErrCloseBtn" type="button">Close</button>\
-                                   <a href="#" id="syntaxErrHideAllLink">Hide all of these pop-ups</a>\
-                                </div>\
-                              </div>'
-      */
+  //     var version = 'v5'; // deployed on 2017-05-20
+  //     // directly ask about what they thought caused the error instead of having them (indirectly)
+  //     // suggest a better error message. this now matches the wording of runtime_err_survey v2.
+  //     var surveyBubbleHTML = '<div id="syntaxErrBubbleContents">\
+  //                               <div id="syntaxErrHeader">You just fixed the following error:</div>\
+  //                               <div id="syntaxErrCodeDisplay"></div>\
+  //                               <div id="syntaxErrMsg"></div>\
+  //                               <div id="syntaxErrQuestion">\
+  //                                 Please help us improve this tool with your feedback.<br/>\
+  //                                 What misunderstanding do you think caused this error?<br/>\
+  //                                  <input type="text" id="syntaxErrTxtInput" size=58 maxlength=150/><br/>\
+  //                                  <button id="syntaxErrSubmitBtn" type="button">Submit</button>\
+  //                                  <button id="syntaxErrCloseBtn" type="button">Close</button>\
+  //                                  <a href="#" id="syntaxErrHideAllLink">Hide all of these pop-ups</a>\
+  //                               </div>\
+  //                             </div>'
 
-      /*
-      var version = 'v4'; // deployed on 2017-05-15
-      var surveyBubbleHTML = '<div id="syntaxErrBubbleContents">\
-                                <div id="syntaxErrHeader">You just fixed the following error:</div>\
-                                <div id="syntaxErrCodeDisplay"></div>\
-                                <div id="syntaxErrMsg"></div>\
-                                <div id="syntaxErrQuestion">\
-                                  Please help us improve this tool.\
-                                  What would have been the most helpful error message for you to see here?<br/>\
-                                   <input type="text" id="syntaxErrTxtInput" size=62 maxlength=150/><br/>\
-                                   <button id="syntaxErrSubmitBtn" type="button">Submit</button>\
-                                   <button id="syntaxErrCloseBtn" type="button">Close</button>\
-                                   <a href="#" id="syntaxErrHideAllLink">Hide all of these pop-ups</a>\
-                                </div>\
-                              </div>'
-      */
+  //     $(bub.qTipContentID()).html(surveyBubbleHTML);
 
-      var version = 'v5'; // deployed on 2017-05-20
-      // directly ask about what they thought caused the error instead of having them (indirectly)
-      // suggest a better error message. this now matches the wording of runtime_err_survey v2.
-      var surveyBubbleHTML = '<div id="syntaxErrBubbleContents">\
-                                <div id="syntaxErrHeader">You just fixed the following error:</div>\
-                                <div id="syntaxErrCodeDisplay"></div>\
-                                <div id="syntaxErrMsg"></div>\
-                                <div id="syntaxErrQuestion">\
-                                  Please help us improve this tool with your feedback.<br/>\
-                                  What misunderstanding do you think caused this error?<br/>\
-                                   <input type="text" id="syntaxErrTxtInput" size=58 maxlength=150/><br/>\
-                                   <button id="syntaxErrSubmitBtn" type="button">Submit</button>\
-                                   <button id="syntaxErrCloseBtn" type="button">Close</button>\
-                                   <a href="#" id="syntaxErrHideAllLink">Hide all of these pop-ups</a>\
-                                </div>\
-                              </div>'
+  //     $(bub.qTipContentID() + ' #syntaxErrSubmitBtn').click(() => {
+  //       var res = $(bub.qTipContentID() + ' #syntaxErrTxtInput').val();
+  //       var resObj = {
+  //         appState: this.getAppState(),
+  //         exc: prevExecutionExceptionObj,
+  //         opt_uuid: this.userUUID,
+  //         session_uuid: this.sessionUUID,
+  //         reply: res,
+  //         type: 'submit',
+  //         v: version
+  //       };
+  //       //$.get('syntax_err_survey.py', {arg: JSON.stringify(resObj)}, function(dat) {});
+  //       this.sendLogRequest('syntax_err_survey.py', { arg: JSON.stringify(resObj) })
+  //       bub.destroyQTip();
+  //     });
 
-      $(bub.qTipContentID()).html(surveyBubbleHTML);
+  //     $(bub.qTipContentID() + ' #syntaxErrCloseBtn').click(() => {
+  //       // grab the value anyways in case the learner wrote something decent ...
+  //       var res = $(bub.qTipContentID() + ' #syntaxErrTxtInput').val();
+  //       var resObj = {
+  //         appState: this.getAppState(),
+  //         exc: prevExecutionExceptionObj,
+  //         opt_uuid: this.userUUID,
+  //         session_uuid: this.sessionUUID,
+  //         reply: res,
+  //         type: 'close',
+  //         v: version
+  //       };
+  //       //$.get('syntax_err_survey.py', {arg: JSON.stringify(resObj)}, function(dat) {});
+  //       this.sendLogRequest('syntax_err_survey.py', { arg: JSON.stringify(resObj) })
+  //       bub.destroyQTip();
+  //     });
 
-      $(bub.qTipContentID() + ' #syntaxErrSubmitBtn').click(() => {
-        var res = $(bub.qTipContentID() + ' #syntaxErrTxtInput').val();
-        var resObj = {
-          appState: this.getAppState(),
-          exc: prevExecutionExceptionObj,
-          opt_uuid: this.userUUID,
-          session_uuid: this.sessionUUID,
-          reply: res,
-          type: 'submit',
-          v: version
-        };
-        //$.get('syntax_err_survey.py', {arg: JSON.stringify(resObj)}, function(dat) {});
-        this.sendLogRequest('syntax_err_survey.py', { arg: JSON.stringify(resObj) })
-        bub.destroyQTip();
-      });
+  //     $(bub.qTipContentID() + ' #syntaxErrHideAllLink').click(() => {
+  //       // grab the value anyways in case the learner wrote something decent ...
+  //       var res = $(bub.qTipContentID() + ' #syntaxErrTxtInput').val();
+  //       var resObj = {
+  //         appState: this.getAppState(),
+  //         exc: prevExecutionExceptionObj,
+  //         opt_uuid: this.userUUID,
+  //         session_uuid: this.sessionUUID,
+  //         reply: res,
+  //         type: 'killall',
+  //         v: version
+  //       };
+  //       //$.get('syntax_err_survey.py', {arg: JSON.stringify(resObj)}, function(dat) {});
+  //       this.sendLogRequest('syntax_err_survey.py', { arg: JSON.stringify(resObj) })
+  //       this.activateSyntaxErrorSurvey = false;
+  //       bub.destroyQTip();
 
-      $(bub.qTipContentID() + ' #syntaxErrCloseBtn').click(() => {
-        // grab the value anyways in case the learner wrote something decent ...
-        var res = $(bub.qTipContentID() + ' #syntaxErrTxtInput').val();
-        var resObj = {
-          appState: this.getAppState(),
-          exc: prevExecutionExceptionObj,
-          opt_uuid: this.userUUID,
-          session_uuid: this.sessionUUID,
-          reply: res,
-          type: 'close',
-          v: version
-        };
-        //$.get('syntax_err_survey.py', {arg: JSON.stringify(resObj)}, function(dat) {});
-        this.sendLogRequest('syntax_err_survey.py', { arg: JSON.stringify(resObj) })
-        bub.destroyQTip();
-      });
-
-      $(bub.qTipContentID() + ' #syntaxErrHideAllLink').click(() => {
-        // grab the value anyways in case the learner wrote something decent ...
-        var res = $(bub.qTipContentID() + ' #syntaxErrTxtInput').val();
-        var resObj = {
-          appState: this.getAppState(),
-          exc: prevExecutionExceptionObj,
-          opt_uuid: this.userUUID,
-          session_uuid: this.sessionUUID,
-          reply: res,
-          type: 'killall',
-          v: version
-        };
-        //$.get('syntax_err_survey.py', {arg: JSON.stringify(resObj)}, function(dat) {});
-        this.sendLogRequest('syntax_err_survey.py', { arg: JSON.stringify(resObj) })
-        this.activateSyntaxErrorSurvey = false;
-        bub.destroyQTip();
-
-        return false; // otherwise the 'a href' will trigger a page reload, ergh!
-      });
+  //       return false; // otherwise the 'a href' will trigger a page reload, ergh!
+  //     });
 
 
-      var bubbleAceEditor = ace.edit('syntaxErrCodeDisplay');
-      bubbleAceEditor.$blockScrolling = Infinity; // kludgy to shut up weird warnings
-      bubbleAceEditor.setOptions({ minLines: 1, maxLines: 5 }); // keep this SMALL
-      bubbleAceEditor.setValue(prevExecutionExceptionObj.myAppState.code.rtrim(), -1);
+  //     var bubbleAceEditor = ace.edit('syntaxErrCodeDisplay');
+  //     bubbleAceEditor.$blockScrolling = Infinity; // kludgy to shut up weird warnings
+  //     bubbleAceEditor.setOptions({ minLines: 1, maxLines: 5 }); // keep this SMALL
+  //     bubbleAceEditor.setValue(prevExecutionExceptionObj.myAppState.code.rtrim(), -1);
 
-      var s = bubbleAceEditor.getSession();
-      // tab -> 4 spaces
-      s.setTabSize(4);
-      s.setUseSoftTabs(true);
-      // disable extraneous indicators:
-      s.setFoldStyle('manual'); // no code folding indicators
-      s.getDocument().setNewLineMode('unix'); // canonicalize all newlines to unix format
-      bubbleAceEditor.setHighlightActiveLine(false);
-      bubbleAceEditor.setShowPrintMargin(false);
-      bubbleAceEditor.setBehavioursEnabled(false);
-      bubbleAceEditor.setFontSize('10px');
+  //     var s = bubbleAceEditor.getSession();
+  //     // tab -> 4 spaces
+  //     s.setTabSize(4);
+  //     s.setUseSoftTabs(true);
+  //     // disable extraneous indicators:
+  //     s.setFoldStyle('manual'); // no code folding indicators
+  //     s.getDocument().setNewLineMode('unix'); // canonicalize all newlines to unix format
+  //     bubbleAceEditor.setHighlightActiveLine(false);
+  //     bubbleAceEditor.setShowPrintMargin(false);
+  //     bubbleAceEditor.setBehavioursEnabled(false);
+  //     bubbleAceEditor.setFontSize('10px');
 
-      $('#syntaxErrCodeDisplay').css('width', '350px');
-      $('#syntaxErrCodeDisplay').css('height', '90px'); // VERY IMPORTANT so that it works on I.E., ugh!
+  //     $('#syntaxErrCodeDisplay').css('width', '350px');
+  //     $('#syntaxErrCodeDisplay').css('height', '90px'); // VERY IMPORTANT so that it works on I.E., ugh!
 
-      // don't do real-time syntax checks:
-      // https://github.com/ajaxorg/ace/wiki/Syntax-validation
-      s.setOption("useWorker", false);
+  //     // don't do real-time syntax checks:
+  //     // https://github.com/ajaxorg/ace/wiki/Syntax-validation
+  //     s.setOption("useWorker", false);
 
-      var lang = prevExecutionExceptionObj.myAppState.py;
-      var mod = 'python';
-      if (lang === 'java') {
-        mod = 'java';
-      } else if (lang === 'js') {
-        mod = 'javascript';
-      } else if (lang === 'ts') {
-        mod = 'typescript';
-      } else if (lang === 'ruby') {
-        mod = 'ruby';
-      } else if (lang === 'c' || lang === 'cpp') {
-        mod = 'c_cpp';
-      }
-      s.setMode("ace/mode/" + mod);
+  //     var lang = prevExecutionExceptionObj.myAppState.py;
+  //     var mod = 'python';
+  //     if (lang === 'java') {
+  //       mod = 'java';
+  //     } else if (lang === 'js') {
+  //       mod = 'javascript';
+  //     } else if (lang === 'ts') {
+  //       mod = 'typescript';
+  //     } else if (lang === 'ruby') {
+  //       mod = 'ruby';
+  //     } else if (lang === 'c' || lang === 'cpp') {
+  //       mod = 'c_cpp';
+  //     }
+  //     s.setMode("ace/mode/" + mod);
 
-      bubbleAceEditor.setReadOnly(true);
+  //     bubbleAceEditor.setReadOnly(true);
 
-      s.setAnnotations([{
-        row: offendingLine - 1,
-        column: null,
-        type: 'error',
-        text: prevExecutionExceptionObj.killerException.exception_msg
-      }]);
+  //     s.setAnnotations([{
+  //       row: offendingLine - 1,
+  //       column: null,
+  //       type: 'error',
+  //       text: prevExecutionExceptionObj.killerException.exception_msg
+  //     }]);
 
-      bub.redrawCodelineBubble(); // do an initial redraw to align everything
-      (bubbleAceEditor as any).scrollToLine(offendingLine - 1, true);
+  //     bub.redrawCodelineBubble(); // do an initial redraw to align everything
+  //     (bubbleAceEditor as any).scrollToLine(offendingLine - 1, true);
 
-      // don't forget htmlspecialchars
-      $("#syntaxErrMsg").html(htmlspecialchars(prevExecutionExceptionObj.killerException.exception_msg));
+  //     // don't forget htmlspecialchars
+  //     $("#syntaxErrMsg").html(htmlspecialchars(prevExecutionExceptionObj.killerException.exception_msg));
 
-      // unbind scroll handler first, then bind new one
-      this.myVisualizer.domRoot.find('#pyCodeOutputDiv')
-        .unbind('scroll')
-        .scroll(function () {
-          bub.redrawCodelineBubble();
-        });
+  //     // unbind scroll handler first, then bind new one
+  //     this.myVisualizer.domRoot.find('#pyCodeOutputDiv')
+  //       .unbind('scroll')
+  //       .scroll(function () {
+  //         bub.redrawCodelineBubble();
+  //       });
 
-      // log an event whenever this bubble is show (i.e., an 'impression')
-      // NB: it might actually be hidden if it appears on a line that
-      // isn't initially visible to the user, but whatevers ...
-      var impressionObj = {
-        appState: this.getAppState(),
-        exceptionLst: this.prevExecutionExceptionObjLst,
-        opt_uuid: this.userUUID,
-        session_uuid: this.sessionUUID,
-        type: 'show',
-        v: version
-      };
-      //$.get('syntax_err_survey.py', {arg: JSON.stringify(impressionObj)}, function(dat) {});
-      this.sendLogRequest('syntax_err_survey.py', { arg: JSON.stringify(impressionObj) })
-    }
-  }
+  //     // log an event whenever this bubble is show (i.e., an 'impression')
+  //     // NB: it might actually be hidden if it appears on a line that
+  //     // isn't initially visible to the user, but whatevers ...
+  //     var impressionObj = {
+  //       appState: this.getAppState(),
+  //       exceptionLst: this.prevExecutionExceptionObjLst,
+  //       opt_uuid: this.userUUID,
+  //       session_uuid: this.sessionUUID,
+  //       type: 'show',
+  //       v: version
+  //     };
+  //     //$.get('syntax_err_survey.py', {arg: JSON.stringify(impressionObj)}, function(dat) {});
+  //     this.sendLogRequest('syntax_err_survey.py', { arg: JSON.stringify(impressionObj) })
+  //   }
+  // }
 
-  // created on 2017-05-15 to mimic experimentalPopUpSyntaxErrorSurvey
-  // (lots of copy-pasta!!!), except this is for run-time errors instead of
-  // compile-time (i.e., syntax) errors
-  popupRuntimeErrorSurvey() {
-    var noErrorsInCurTrace = true;
-    // scan through the entire trace to make sure there are no errors;
-    // if there are any errors, then we haven't really definitively "fixed"
-    // all of the run-time errors yet, so don't display a pop-up message
-    for (var i = 0; i < this.myVisualizer.curTrace.length; i++) {
-      if (this.myVisualizer.curTrace[i].event === "exception") {
-        noErrorsInCurTrace = false;
-        break;
-      }
-    }
+  // // created on 2017-05-15 to mimic experimentalPopUpSyntaxErrorSurvey
+  // // (lots of copy-pasta!!!), except this is for run-time errors instead of
+  // // compile-time (i.e., syntax) errors
+  // popupRuntimeErrorSurvey() {
+  //   var noErrorsInCurTrace = true;
+  //   // scan through the entire trace to make sure there are no errors;
+  //   // if there are any errors, then we haven't really definitively "fixed"
+  //   // all of the run-time errors yet, so don't display a pop-up message
+  //   for (var i = 0; i < this.myVisualizer.curTrace.length; i++) {
+  //     if (this.myVisualizer.curTrace[i].event === "exception") {
+  //       noErrorsInCurTrace = false;
+  //       break;
+  //     }
+  //   }
 
-    if (this.prevExecutionRuntimeErrorMsg && noErrorsInCurTrace) {
-      var savedPrevExecutionRuntimeErrorMsg = this.prevExecutionRuntimeErrorMsg; // save it now!
-      var savedPrevExecutionRuntimeErrorLine = this.prevExecutionRuntimeErrorLine;
-      var savedPrevExecutionRuntimeErrorCode = this.prevExecutionRuntimeErrorCode;
+  //   if (this.prevExecutionRuntimeErrorMsg && noErrorsInCurTrace) {
+  //     var savedPrevExecutionRuntimeErrorMsg = this.prevExecutionRuntimeErrorMsg; // save it now!
+  //     var savedPrevExecutionRuntimeErrorLine = this.prevExecutionRuntimeErrorLine;
+  //     var savedPrevExecutionRuntimeErrorCode = this.prevExecutionRuntimeErrorCode;
 
-      var bub = new SyntaxErrorSurveyBubble(this.myVisualizer, 'pyCodeOutputDiv');
+  //     var bub = new SyntaxErrorSurveyBubble(this.myVisualizer, 'pyCodeOutputDiv');
 
-      // destroy then create a new tip:
-      bub.destroyQTip();
-      $(bub.hashID).qtip({
-        show: {
-          ready: true, // show on document.ready instead of on mouseenter
-          delay: 0,
-          event: null,
-          effect: function () { $(this).show(); }, // don't do any fancy fading because it screws up with scrolling
-        },
-        hide: {
-          fixed: true,
-          event: null,
-          effect: function () { $(this).hide(); }, // don't do any fancy fading because it screws up with scrolling
-        },
+  //     // destroy then create a new tip:
+  //     bub.destroyQTip();
+  //     $(bub.hashID).qtip({
+  //       show: {
+  //         ready: true, // show on document.ready instead of on mouseenter
+  //         delay: 0,
+  //         event: null,
+  //         effect: function () { $(this).show(); }, // don't do any fancy fading because it screws up with scrolling
+  //       },
+  //       hide: {
+  //         fixed: true,
+  //         event: null,
+  //         effect: function () { $(this).hide(); }, // don't do any fancy fading because it screws up with scrolling
+  //       },
 
-        content: ' ', // can't be empty!
-        id: bub.domID,
-        position: {
-          my: bub.my,
-          at: bub.at,
-          adjust: {
-            x: 10,
-          },
-        },
-        style: {
-          classes: 'qtip-light',
-        }
-      });
+  //       content: ' ', // can't be empty!
+  //       id: bub.domID,
+  //       position: {
+  //         my: bub.my,
+  //         at: bub.at,
+  //         adjust: {
+  //           x: 10,
+  //         },
+  //       },
+  //       style: {
+  //         classes: 'qtip-light',
+  //       }
+  //     });
 
 
-      //var version = 'v1'; // deployed on 2017-05-15
-      // v1 wording: "What misunderstanding originally caused this error?"
+  //     //var version = 'v1'; // deployed on 2017-05-15
+  //     // v1 wording: "What misunderstanding originally caused this error?"
 
-      var version = 'v2'; // deployed on 2017-05-20
-      // v2 wording: "Please help us improve this tool with your feedback.\nWhat misunderstanding do you think caused this error?"
+  //     var version = 'v2'; // deployed on 2017-05-20
+  //     // v2 wording: "Please help us improve this tool with your feedback.\nWhat misunderstanding do you think caused this error?"
 
-      var surveyBubbleHTML = '<div id="syntaxErrBubbleContents">\
-                                <div id="syntaxErrHeader">You just fixed this error from the last time your code ran:</div>\
-                                <div id="syntaxErrCodeDisplay"></div>\
-                                <div id="syntaxErrMsg"></div>\
-                                <div id="syntaxErrQuestion">\
-                                  Please help us improve this tool with your feedback.<br/>\
-                                  What misunderstanding do you think caused this error?<br/>\
-                                   <input type="text" id="syntaxErrTxtInput" size=58 maxlength=150/><br/>\
-                                   <button id="syntaxErrSubmitBtn" type="button">Submit</button>\
-                                   <button id="syntaxErrCloseBtn" type="button">Close</button>\
-                                   <a href="#" id="syntaxErrHideAllLink">Hide all of these pop-ups</a>\
-                                </div>\
-                              </div>'
+  //     var surveyBubbleHTML = '<div id="syntaxErrBubbleContents">\
+  //                               <div id="syntaxErrHeader">You just fixed this error from the last time your code ran:</div>\
+  //                               <div id="syntaxErrCodeDisplay"></div>\
+  //                               <div id="syntaxErrMsg"></div>\
+  //                               <div id="syntaxErrQuestion">\
+  //                                 Please help us improve this tool with your feedback.<br/>\
+  //                                 What misunderstanding do you think caused this error?<br/>\
+  //                                  <input type="text" id="syntaxErrTxtInput" size=58 maxlength=150/><br/>\
+  //                                  <button id="syntaxErrSubmitBtn" type="button">Submit</button>\
+  //                                  <button id="syntaxErrCloseBtn" type="button">Close</button>\
+  //                                  <a href="#" id="syntaxErrHideAllLink">Hide all of these pop-ups</a>\
+  //                               </div>\
+  //                             </div>'
 
-      $(bub.qTipContentID()).html(surveyBubbleHTML);
+  //     $(bub.qTipContentID()).html(surveyBubbleHTML);
 
-      $(bub.qTipContentID() + ' #syntaxErrSubmitBtn').click(() => {
-        var res = $(bub.qTipContentID() + ' #syntaxErrTxtInput').val();
-        var resObj = {
-          appState: this.getAppState(),
-          err_msg: savedPrevExecutionRuntimeErrorMsg,
-          err_line: savedPrevExecutionRuntimeErrorLine,
-          err_code: savedPrevExecutionRuntimeErrorCode,
-          opt_uuid: this.userUUID,
-          session_uuid: this.sessionUUID,
-          reply: res,
-          type: 'submit',
-          v: version
-        };
-        //$.get('runtime_err_survey.py', {arg: JSON.stringify(resObj)}, function(dat) {});
-        this.sendLogRequest('syntax_err_survey.py', { arg: JSON.stringify(resObj) })
-        bub.destroyQTip();
-      });
+  //     $(bub.qTipContentID() + ' #syntaxErrSubmitBtn').click(() => {
+  //       var res = $(bub.qTipContentID() + ' #syntaxErrTxtInput').val();
+  //       var resObj = {
+  //         appState: this.getAppState(),
+  //         err_msg: savedPrevExecutionRuntimeErrorMsg,
+  //         err_line: savedPrevExecutionRuntimeErrorLine,
+  //         err_code: savedPrevExecutionRuntimeErrorCode,
+  //         opt_uuid: this.userUUID,
+  //         session_uuid: this.sessionUUID,
+  //         reply: res,
+  //         type: 'submit',
+  //         v: version
+  //       };
+  //       //$.get('runtime_err_survey.py', {arg: JSON.stringify(resObj)}, function(dat) {});
+  //       this.sendLogRequest('syntax_err_survey.py', { arg: JSON.stringify(resObj) })
+  //       bub.destroyQTip();
+  //     });
 
-      $(bub.qTipContentID() + ' #syntaxErrCloseBtn').click(() => {
-        // grab the value anyways in case the learner wrote something decent ...
-        var res = $(bub.qTipContentID() + ' #syntaxErrTxtInput').val();
-        var resObj = {
-          appState: this.getAppState(),
-          err_msg: savedPrevExecutionRuntimeErrorMsg,
-          err_line: savedPrevExecutionRuntimeErrorLine,
-          err_code: savedPrevExecutionRuntimeErrorCode,
-          opt_uuid: this.userUUID,
-          session_uuid: this.sessionUUID,
-          reply: res,
-          type: 'close',
-          v: version
-        };
-        //$.get('runtime_err_survey.py', {arg: JSON.stringify(resObj)}, function(dat) {});
-        this.sendLogRequest('syntax_err_survey.py', { arg: JSON.stringify(resObj) })
-        bub.destroyQTip();
-      });
+  //     $(bub.qTipContentID() + ' #syntaxErrCloseBtn').click(() => {
+  //       // grab the value anyways in case the learner wrote something decent ...
+  //       var res = $(bub.qTipContentID() + ' #syntaxErrTxtInput').val();
+  //       var resObj = {
+  //         appState: this.getAppState(),
+  //         err_msg: savedPrevExecutionRuntimeErrorMsg,
+  //         err_line: savedPrevExecutionRuntimeErrorLine,
+  //         err_code: savedPrevExecutionRuntimeErrorCode,
+  //         opt_uuid: this.userUUID,
+  //         session_uuid: this.sessionUUID,
+  //         reply: res,
+  //         type: 'close',
+  //         v: version
+  //       };
+  //       //$.get('runtime_err_survey.py', {arg: JSON.stringify(resObj)}, function(dat) {});
+  //       this.sendLogRequest('syntax_err_survey.py', { arg: JSON.stringify(resObj) })
+  //       bub.destroyQTip();
+  //     });
 
-      $(bub.qTipContentID() + ' #syntaxErrHideAllLink').click(() => {
-        // grab the value anyways in case the learner wrote something decent ...
-        var res = $(bub.qTipContentID() + ' #syntaxErrTxtInput').val();
-        var resObj = {
-          appState: this.getAppState(),
-          err_msg: savedPrevExecutionRuntimeErrorMsg,
-          err_line: savedPrevExecutionRuntimeErrorLine,
-          err_code: savedPrevExecutionRuntimeErrorCode,
-          opt_uuid: this.userUUID,
-          session_uuid: this.sessionUUID,
-          reply: res,
-          type: 'killall',
-          v: version
-        };
-        //$.get('runtime_err_survey.py', {arg: JSON.stringify(resObj)}, function(dat) {});
-        this.sendLogRequest('syntax_err_survey.py', { arg: JSON.stringify(resObj) })
-        this.activateRuntimeErrorSurvey = false;
-        bub.destroyQTip();
+  //     $(bub.qTipContentID() + ' #syntaxErrHideAllLink').click(() => {
+  //       // grab the value anyways in case the learner wrote something decent ...
+  //       var res = $(bub.qTipContentID() + ' #syntaxErrTxtInput').val();
+  //       var resObj = {
+  //         appState: this.getAppState(),
+  //         err_msg: savedPrevExecutionRuntimeErrorMsg,
+  //         err_line: savedPrevExecutionRuntimeErrorLine,
+  //         err_code: savedPrevExecutionRuntimeErrorCode,
+  //         opt_uuid: this.userUUID,
+  //         session_uuid: this.sessionUUID,
+  //         reply: res,
+  //         type: 'killall',
+  //         v: version
+  //       };
+  //       //$.get('runtime_err_survey.py', {arg: JSON.stringify(resObj)}, function(dat) {});
+  //       this.sendLogRequest('syntax_err_survey.py', { arg: JSON.stringify(resObj) })
+  //       this.activateRuntimeErrorSurvey = false;
+  //       bub.destroyQTip();
 
-        return false; // otherwise the 'a href' will trigger a page reload, ergh!
-      });
+  //       return false; // otherwise the 'a href' will trigger a page reload, ergh!
+  //     });
 
-      var bubbleAceEditor = ace.edit('syntaxErrCodeDisplay');
-      bubbleAceEditor.$blockScrolling = Infinity; // kludgy to shut up weird warnings
-      bubbleAceEditor.setOptions({ minLines: 1, maxLines: 5 }); // keep this SMALL
-      bubbleAceEditor.setValue(savedPrevExecutionRuntimeErrorCode, -1);
+  //     var bubbleAceEditor = ace.edit('syntaxErrCodeDisplay');
+  //     bubbleAceEditor.$blockScrolling = Infinity; // kludgy to shut up weird warnings
+  //     bubbleAceEditor.setOptions({ minLines: 1, maxLines: 5 }); // keep this SMALL
+  //     bubbleAceEditor.setValue(savedPrevExecutionRuntimeErrorCode, -1);
 
-      var s = bubbleAceEditor.getSession();
-      // tab -> 4 spaces
-      s.setTabSize(4);
-      s.setUseSoftTabs(true);
-      // disable extraneous indicators:
-      s.setFoldStyle('manual'); // no code folding indicators
-      s.getDocument().setNewLineMode('unix'); // canonicalize all newlines to unix format
-      bubbleAceEditor.setHighlightActiveLine(false);
-      bubbleAceEditor.setShowPrintMargin(false);
-      bubbleAceEditor.setBehavioursEnabled(false);
-      bubbleAceEditor.setFontSize('10px');
+  //     var s = bubbleAceEditor.getSession();
+  //     // tab -> 4 spaces
+  //     s.setTabSize(4);
+  //     s.setUseSoftTabs(true);
+  //     // disable extraneous indicators:
+  //     s.setFoldStyle('manual'); // no code folding indicators
+  //     s.getDocument().setNewLineMode('unix'); // canonicalize all newlines to unix format
+  //     bubbleAceEditor.setHighlightActiveLine(false);
+  //     bubbleAceEditor.setShowPrintMargin(false);
+  //     bubbleAceEditor.setBehavioursEnabled(false);
+  //     bubbleAceEditor.setFontSize('10px');
 
-      $('#syntaxErrCodeDisplay').css('width', '350px');
-      $('#syntaxErrCodeDisplay').css('height', '90px'); // VERY IMPORTANT so that it works on I.E., ugh!
+  //     $('#syntaxErrCodeDisplay').css('width', '350px');
+  //     $('#syntaxErrCodeDisplay').css('height', '90px'); // VERY IMPORTANT so that it works on I.E., ugh!
 
-      // don't do real-time syntax checks:
-      // https://github.com/ajaxorg/ace/wiki/Syntax-validation
-      s.setOption("useWorker", false);
-      bubbleAceEditor.setReadOnly(true);
+  //     // don't do real-time syntax checks:
+  //     // https://github.com/ajaxorg/ace/wiki/Syntax-validation
+  //     s.setOption("useWorker", false);
+  //     bubbleAceEditor.setReadOnly(true);
 
-      s.setAnnotations([{
-        row: savedPrevExecutionRuntimeErrorLine - 1,
-        column: null,
-        type: 'error',
-        text: savedPrevExecutionRuntimeErrorMsg
-      }]);
+  //     s.setAnnotations([{
+  //       row: savedPrevExecutionRuntimeErrorLine - 1,
+  //       column: null,
+  //       type: 'error',
+  //       text: savedPrevExecutionRuntimeErrorMsg
+  //     }]);
 
-      bub.redrawCodelineBubble(); // do an initial redraw to align everything
-      (bubbleAceEditor as any).scrollToLine(savedPrevExecutionRuntimeErrorLine - 1, true);
+  //     bub.redrawCodelineBubble(); // do an initial redraw to align everything
+  //     (bubbleAceEditor as any).scrollToLine(savedPrevExecutionRuntimeErrorLine - 1, true);
 
-      // don't forget htmlspecialchars
-      $("#syntaxErrMsg").html(htmlspecialchars(savedPrevExecutionRuntimeErrorMsg));
+  //     // don't forget htmlspecialchars
+  //     $("#syntaxErrMsg").html(htmlspecialchars(savedPrevExecutionRuntimeErrorMsg));
 
-      // unbind scroll handler first, then bind new one
-      this.myVisualizer.domRoot.find('#pyCodeOutputDiv')
-        .unbind('scroll')
-        .scroll(function () {
-          bub.redrawCodelineBubble();
-        });
+  //     // unbind scroll handler first, then bind new one
+  //     this.myVisualizer.domRoot.find('#pyCodeOutputDiv')
+  //       .unbind('scroll')
+  //       .scroll(function () {
+  //         bub.redrawCodelineBubble();
+  //       });
 
-      // log an event whenever this bubble is show (i.e., an 'impression')
-      // NB: it might actually be hidden if it appears on a line that
-      // isn't initially visible to the user, but whatevers ...
-      var impressionObj = {
-        appState: this.getAppState(),
-        err_msg: savedPrevExecutionRuntimeErrorMsg,
-        err_line: savedPrevExecutionRuntimeErrorLine,
-        err_code: savedPrevExecutionRuntimeErrorCode,
-        opt_uuid: this.userUUID,
-        session_uuid: this.sessionUUID,
-        type: 'show',
-        v: version
-      };
-      //$.get('runtime_err_survey.py', {arg: JSON.stringify(impressionObj)}, function(dat) {});
-      this.sendLogRequest('syntax_err_survey.py', { arg: JSON.stringify(impressionObj) })
-    }
-  }
+  //     // log an event whenever this bubble is show (i.e., an 'impression')
+  //     // NB: it might actually be hidden if it appears on a line that
+  //     // isn't initially visible to the user, but whatevers ...
+  //     var impressionObj = {
+  //       appState: this.getAppState(),
+  //       err_msg: savedPrevExecutionRuntimeErrorMsg,
+  //       err_line: savedPrevExecutionRuntimeErrorLine,
+  //       err_code: savedPrevExecutionRuntimeErrorCode,
+  //       opt_uuid: this.userUUID,
+  //       session_uuid: this.sessionUUID,
+  //       type: 'show',
+  //       v: version
+  //     };
+  //     //$.get('runtime_err_survey.py', {arg: JSON.stringify(impressionObj)}, function(dat) {});
+  //     this.sendLogRequest('syntax_err_survey.py', { arg: JSON.stringify(impressionObj) })
+  //   }
+  // }
 
 } // END Class OptFrontendWithTestcases
 
@@ -755,111 +670,18 @@ $(document).ready(function () {
     );
   }
 
-  // initialize all HTML elements before creating optFrontend object
-  $("#exampleSnippets")
-    .append(exampleLinks.exampleHeaderHtml);
-
   var params = {};
   var optOverride = (window as any).optOverride;
   // super hacky!
   if (optOverride) {
     (params as any).disableLocalStorageToggles = true;
-
-    if (optOverride.frontendLang === 'java') {
-      $("#exampleSnippets").append(exampleLinks.javaExamplesHtml);
-    } else if (optOverride.frontendLang === 'ruby') {
-      $("#exampleSnippets").append(exampleLinks.rubyExamplesHtml);
-    } else if (optOverride.frontendLang === 'c') {
-      $("#exampleSnippets").append(exampleLinks.cExamplesHtml);
-    }else if (optOverride.frontendLang === 'cpp') {
-      $("#exampleSnippets").append(exampleLinks.cppExamplesHtml);
-    } else if (optOverride.frontendLang === '3' || optOverride.frontendLang === 'pyodide' || optOverride.frontendLang === 'py3anaconda') {
-      $("#exampleSnippets").append(exampleLinks.pythonExamplesHtml);
-    }
-  } else {
-    $("#exampleSnippets")
-      .append(exampleLinks.pythonExamplesHtml)
-      .append(exampleLinks.javaExamplesHtml)
-      .append(exampleLinks.rubyExamplesHtml)
-      .append(exampleLinks.cExamplesHtml)
-      .append(exampleLinks.cppExamplesHtml);
   }
-  $("#footer").append(footerHtml);
-
-  // insert a toggle for examples after #exampleSnippets, then hide it
-  $("#exampleSnippets").after('<a href="#" id="showExampleLink" style="font-size: 11pt;">Show example code and courses</a>');
-  $("#showExampleLink").click(() => {
-    $("#exampleSnippets").show();
-    $("#showExampleLink").hide();
-    return false; // don't follow the href link
-  });
-  $("#exampleSnippets").hide();
 
   var optFrontend = new OptFrontendWithTestcases(params);
-  optFrontend.setSurveyHTML();
 
   (window as any).optFrontend = optFrontend; // purposely leak to globals to ease debugging!!!
 
-  // canned examples
-  $(".exampleLink").click(function () {
-    var myId = $(this).attr('id');
-    let selectorValue = $('#pythonVersionSelector').val()
-    var exFile;
-    var exFileUrl;
-    var lang;
 
-    if (exampleLinks.JAVA_EXAMPLES[myId] !== undefined) {
-      exFile = exampleLinks.JAVA_EXAMPLES[myId];
-      lang = 'java';
-    } else if (exampleLinks.RUBY_EXAMPLES[myId] !== undefined) {
-      exFile = exampleLinks.RUBY_EXAMPLES[myId];
-      lang = 'ruby';
-    } else if (exampleLinks.C_EXAMPLES[myId] !== undefined) {
-      exFile = exampleLinks.C_EXAMPLES[myId];
-      lang = 'c';
-    } else if (exampleLinks.CPP_EXAMPLES[myId] !== undefined) {
-      exFile = exampleLinks.CPP_EXAMPLES[myId];
-      lang = 'cpp';
-    } else if (exampleLinks.PY2_EXAMPLES[myId] !== undefined) {
-      exFile = exampleLinks.PY2_EXAMPLES[myId];
-      if (selectorValue == 'pyodide') {
-        lang = 'pyodide';
-      } else if (selectorValue == 'py3anaconda') {
-        lang = 'py3anaconda';
-      } else
-        lang = '3';
-    }
-
-
-    assert(lang);
-    $('#pythonVersionSelector').val(lang);
-
-    if (lang === '3' || lang === 'py3anaconda' || lang === 'pyodide') {
-      exFileUrl = 'example-code/python/' + exFile;
-    } else {
-      exFileUrl = 'example-code/' + lang + '/' + exFile;
-    }
-
-    $.get(exFileUrl, function (dat) {
-      optFrontend.pyInputSetValue(dat);
-      optFrontend.setAceMode();
-
-      // very subtle! for TogetherJS to sync #pythonVersionSelector
-      // properly, we must manually send a sync request event:
-      if (TogetherJS && TogetherJS.running) {
-        var myVisualizer = optFrontend.myVisualizer;
-        TogetherJS.send({
-          type: "syncAppState",
-          myAppState: optFrontend.getAppState(),
-          codeInputScrollTop: optFrontend.pyInputGetScrollTop(),
-          pyCodeOutputDivScrollTop: myVisualizer ?
-            myVisualizer.domRoot.find('#pyCodeOutputDiv').scrollTop() :
-            undefined
-        });
-      }
-    }, 'text' /* data type - set to text or else jQuery tries to EXECUTE the JS example code, haha, eeek! */);
-    return false; // prevent an HTML 'a' element click from going to a link
-  });
   $('#pythonVersionSelector').change(optFrontend.setAceMode.bind(optFrontend));
   optFrontend.setAceMode();
 
