@@ -1,0 +1,3 @@
+import numpy as np
+foo = np.zeros((5, 5))
+foo[0, 1] = 10

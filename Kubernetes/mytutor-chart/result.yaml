@@ -1,0 +1,443 @@
+---
+# Source: mytutor/templates/mytutor_network_policy.yaml
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: test-network-policy
+  namespace: mytutor
+spec:
+  podSelector:
+    matchLabels:
+      app: backend
+  policyTypes:
+    - Egress
+---
+# Source: mytutor/templates/mytutor_service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: mytutor-backend-anaconda-service
+  namespace: mytutor
+  labels:
+    app: backend
+        
+    app.kubernetes.io/instance: "mytutor-f8dsh89hfsd8"
+    app.kubernetes.io/managed-by: "helm"
+    app.kubernetes.io/name: "mytutor"
+    app.kubernetes.io/version: "3.0"
+    env: "testing"
+    "helm.sh/chart": mytutor-0.1
+    
+spec:
+  type: ClusterIP
+  selector:
+    app: anaconda
+  ports:
+    - name: http
+      protocol: TCP
+      port: 8081
+      targetPort: 8081
+---
+# Source: mytutor/templates/mytutor_service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: mytutor-backend-python-service
+  namespace: mytutor
+  labels:
+    app: backend
+        
+    app.kubernetes.io/instance: "mytutor-f8dsh89hfsd8"
+    app.kubernetes.io/managed-by: "helm"
+    app.kubernetes.io/name: "mytutor"
+    app.kubernetes.io/version: "3.0"
+    env: "testing"
+    "helm.sh/chart": mytutor-0.1
+    
+spec:
+  type: ClusterIP
+  selector:
+    app: mytutor_backend_python
+  ports:
+    - name: http
+      protocol: TCP
+      port: 8080
+      targetPort: 8080
+---
+# Source: mytutor/templates/mytutor_service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: mytutor-document-service
+  namespace: mytutor
+  labels:
+    app: docs
+        
+    app.kubernetes.io/instance: "mytutor-f8dsh89hfsd8"
+    app.kubernetes.io/managed-by: "helm"
+    app.kubernetes.io/name: "mytutor"
+    app.kubernetes.io/version: "3.0"
+    env: "testing"
+    "helm.sh/chart": mytutor-0.1
+    
+spec:
+  type: ClusterIP
+  selector:
+    app: mytutor_document
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 80
+---
+# Source: mytutor/templates/mytutor_service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: mytutor-frontend-service
+  namespace: mytutor
+  labels:
+    app: frontend
+        
+    app.kubernetes.io/instance: "mytutor-f8dsh89hfsd8"
+    app.kubernetes.io/managed-by: "helm"
+    app.kubernetes.io/name: "mytutor"
+    app.kubernetes.io/version: "3.0"
+    env: "testing"
+    "helm.sh/chart": mytutor-0.1
+    
+spec:
+  type: ClusterIP
+  selector:
+    app: mytutor_frontend
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 80
+---
+# Source: mytutor/templates/mytutor_deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mytutor-backend-anaconda-deployment
+  namespace: mytutor
+  labels:
+    app: backend
+        
+    app.kubernetes.io/instance: "mytutor-f8dsh89hfsd8"
+    app.kubernetes.io/managed-by: "helm"
+    app.kubernetes.io/name: "mytutor"
+    app.kubernetes.io/version: "3.0"
+    env: "testing"
+    "helm.sh/chart": mytutor-0.1
+    
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: anaconda
+  template:
+    metadata:
+      labels:
+        app: anaconda
+    spec:
+      containers:
+        - name: mytutor-backend-anaconda
+          image: "180108084/cokapi_python_anaconda:v3"
+          ports:
+            - name: http
+              containerPort: 8081
+              protocol: TCP
+
+          resources:
+            requests:
+              memory: 0.5G
+              cpu: 500m
+            limits:
+              memory: 2G
+              cpu: 1000m
+          
+          
+          securityContext:
+            capabilities:
+              drop:
+              - all
+          
+          
+          
+          readinessProbe:
+            
+            
+            httpGet:
+              path: /readyz
+              port: 8081
+            
+            initialDelaySeconds: 5
+            periodSeconds: 3
+            failureThreshold: 1
+          livenessProbe:
+            
+            
+            httpGet:
+              path: /livez
+              port: 8081
+            
+            periodSeconds:  3
+            failureThreshold: 1
+---
+# Source: mytutor/templates/mytutor_deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mytutor-backend-python-deployment
+  namespace: mytutor
+  labels:
+    app: backend
+        
+    app.kubernetes.io/instance: "mytutor-f8dsh89hfsd8"
+    app.kubernetes.io/managed-by: "helm"
+    app.kubernetes.io/name: "mytutor"
+    app.kubernetes.io/version: "3.0"
+    env: "testing"
+    "helm.sh/chart": mytutor-0.1
+    
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: mytutor_backend_python
+  template:
+    metadata:
+      labels:
+        app: mytutor_backend_python
+    spec:
+      containers:
+        - name: mytutor-backend-python
+          image: "180108084/cokapi_python:v2"
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+
+          resources:
+            requests:
+              memory: 0.2G
+              cpu: 200m
+            limits:
+              memory: 1G
+              cpu: 500m
+          
+          
+          securityContext:
+            capabilities:
+              drop:
+              - all
+          
+          
+          
+          readinessProbe:
+            
+            
+            httpGet:
+              path: /readyz
+              port: 8080
+            
+            initialDelaySeconds: 5
+            periodSeconds: 3
+            failureThreshold: 1
+          livenessProbe:
+            
+            
+            httpGet:
+              path: /livez
+              port: 8080
+            
+            periodSeconds:  3
+            failureThreshold: 1
+---
+# Source: mytutor/templates/mytutor_deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mytutor-document-deployment
+  namespace: mytutor
+  labels:
+    app: docs
+        
+    app.kubernetes.io/instance: "mytutor-f8dsh89hfsd8"
+    app.kubernetes.io/managed-by: "helm"
+    app.kubernetes.io/name: "mytutor"
+    app.kubernetes.io/version: "3.0"
+    env: "testing"
+    "helm.sh/chart": mytutor-0.1
+    
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mytutor_document
+  template:
+    metadata:
+      labels:
+        app: mytutor_document
+    spec:
+      containers:
+        - name: mytutor-document
+          image: "williamtang2000/mytutor_sphinx_docs:v4"
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+
+          resources:
+            requests:
+              memory: 0.2G
+              cpu: 200m
+            limits:
+              memory: 0.4G
+              cpu: 300m
+---
+# Source: mytutor/templates/mytutor_deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mytutor-frontend-deployment
+  namespace: mytutor
+  labels:
+    app: frontend
+        
+    app.kubernetes.io/instance: "mytutor-f8dsh89hfsd8"
+    app.kubernetes.io/managed-by: "helm"
+    app.kubernetes.io/name: "mytutor"
+    app.kubernetes.io/version: "3.0"
+    env: "testing"
+    "helm.sh/chart": mytutor-0.1
+    
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mytutor_frontend
+  template:
+    metadata:
+      labels:
+        app: mytutor_frontend
+    spec:
+      containers:
+        - name: mytutor-frontend
+          image: "williamtang2000/mytutor_frontend:v4.3.8"
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+
+          resources:
+            requests:
+              memory: 0.25G
+              cpu: 250m
+            limits:
+              memory: 0.5G
+              cpu: 500m
+---
+# Source: mytutor/templates/mytutor_ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: mytutor-ingress
+  namespace: mytutor
+  annotations:
+    # Redirect path to /
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    # Cache JS, CSS, fonts, and images
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      if ($request_uri ~* \.(css|js|gif|jpe?g|png|svg|woff2)) {
+          add_header Cache-Control "public, max-age=31536000";
+      }
+    # Record user session and send the user request to the same pod
+    nginx.ingress.kubernetes.io/affinity: "cookie"
+    nginx.ingress.kubernetes.io/session-cookie-name: "route"
+    nginx.ingress.kubernetes.io/session-cookie-expires: "172800"
+    # Limit for each connection IP
+    nginx.ingress.kubernetes.io/limit-connections: "30" # Remove it when load/stress test
+    nginx.ingress.kubernetes.io/limit-rpm: "100"
+    # Save log file
+    nginx.ingress.kubernetes.io/enable-access-log: "true"
+  labels:
+        
+    app.kubernetes.io/instance: "mytutor-f8dsh89hfsd8"
+    app.kubernetes.io/managed-by: "helm"
+    app.kubernetes.io/name: "mytutor"
+    app.kubernetes.io/version: "3.0"
+    env: "testing"
+    "helm.sh/chart": mytutor-0.1
+    
+spec:
+  
+  ingressClassName: nginx
+  rules:
+    - host: mytutor.cs.cityu.edu.hk
+      http:
+        paths:
+          - path: /anaconda(/|$)(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: mytutor-backend-anaconda-service
+                port:
+                  number: 8081
+          - path: /python(/|$)(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: mytutor-backend-python-service
+                port:
+                  number: 8080
+          - path: /opt3(/|$)(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: mytutor-frontend-service
+                port:
+                  number: 80
+---
+# Source: mytutor/templates/mytutor_ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: mytutor-ingress-document
+  namespace: mytutor
+  annotations:
+    # Cache JS, CSS, fonts, and images
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      if ($request_uri ~* \.(css|js|gif|jpe?g|png|svg|woff2)) {
+          add_header Cache-Control "public, max-age=31536000";
+      }
+    # Record user session and send the user request to the same pod
+    nginx.ingress.kubernetes.io/affinity: "cookie"
+    nginx.ingress.kubernetes.io/session-cookie-name: "route"
+    nginx.ingress.kubernetes.io/session-cookie-expires: "172800"
+    nginx.ingress.kubernetes.io/limit-rpm: "100"
+  labels:
+        
+    app.kubernetes.io/instance: "mytutor-f8dsh89hfsd8"
+    app.kubernetes.io/managed-by: "helm"
+    app.kubernetes.io/name: "mytutor"
+    app.kubernetes.io/version: "3.0"
+    env: "testing"
+    "helm.sh/chart": mytutor-0.1
+    
+spec:
+  
+  ingressClassName: nginx
+  rules:
+    - host: mytutor.cs.cityu.edu.hk
+      http:
+        paths:
+          - path: /docs
+            pathType: Prefix
+            backend:
+              service:
+                name: mytutor-document-service
+                port:
+                  number: 80

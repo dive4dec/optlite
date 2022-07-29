@@ -1,0 +1,28 @@
+{{- $namespace := .Values.namespace }}
+{{- $labels_data := (dict "global_labels" .Values.global_lables "Chart" .Chart) -}}
+
+{{- /* 
+  Loop all the apps if enable 
+*/}}
+{{- range .Values.app }}
+{{ if .enable }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .name }}-service
+  namespace: {{ $namespace }}
+  labels:
+    app: {{ .app }}
+    {{ include "app.labels" $labels_data | indent 4 }}
+spec:
+  type: ClusterIP
+  selector:
+    app: {{ .deployment.label }}
+  ports:
+    - name: http
+      protocol: TCP
+      port: {{ .service.port }}
+      targetPort: {{ .service.targetPort }}
+{{ end }}
+{{- end }}

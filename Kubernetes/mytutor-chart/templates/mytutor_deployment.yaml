@@ -1,0 +1,81 @@
+{{- $namespace := .Values.namespace }}
+{{- $labels_data := (dict "global_labels" .Values.global_lables "Chart" .Chart) -}}
+{{- $backend_probe := (dict "backend_probe" .Values.app_config.backend_probe) -}}
+{{/* Loop all the apps if enable */}}
+{{- range .Values.app }}
+{{ if and .enable .deployment }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .name }}-deployment
+  namespace: {{ $namespace }}
+  labels:
+    app: {{ .app }}
+    {{ include "app.labels" $labels_data | indent 4 }}
+spec:
+  replicas: {{ .deployment.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .deployment.label }}
+  template:
+    metadata:
+      labels:
+        app: {{ .deployment.label }}
+    spec:
+      containers:
+        - name: {{.name }}
+          image: "{{ .deployment.container.image }}:{{ .deployment.container.tag }}"
+          ports: 
+          {{- range $key, $value := .deployment.container.ports }}
+            - name: {{ $key }}
+              containerPort: {{ int $value }}
+              protocol: TCP
+          {{- end }}
+
+          {{ if .deployment.resources }}
+          {{- with .deployment.resources -}}
+          resources:
+            requests:
+              memory: {{ .requests.memory }}
+              cpu: {{ .requests.cpu }}
+            limits:
+              memory: {{ .limits.memory }}
+              cpu: {{ .limits.cpu }}
+          {{- end -}}
+          {{ end }}
+          {{ if .deployment.securityContext }}
+          {{/* Hard code it by now */}}
+          securityContext: 
+            {{- toYaml .deployment.securityContext | nindent 12 }}
+          {{ end }}
+          {{/* Enable probes */}}
+          {{ if .deployment.probe }}
+          readinessProbe:
+            {{ if (eq .deployment.probe "tcp") }}
+            tcpSocket:
+              port: {{ .deployment.container.ports.http }}
+            {{ end }}
+            {{ if and (.deployment.probe) (eq .deployment.probe "http")}}
+            httpGet:
+              path: /readyz
+              port: {{ .deployment.container.ports.http }}
+            {{ end }}
+            initialDelaySeconds: {{ $.Values.app_config.backend_probe.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ $.Values.app_config.backend_probe.readinessProbe.periodSeconds }}
+            failureThreshold: {{ $.Values.app_config.backend_probe.readinessProbe.failureThreshold }}
+          livenessProbe:
+            {{ if (eq .deployment.probe "tcp") }}
+            tcpSocket:
+              port: {{ .deployment.container.ports.http }}
+            {{ end }}
+            {{ if (eq .deployment.probe "http")}}
+            httpGet:
+              path: /livez
+              port: {{ .deployment.container.ports.http }}
+            {{ end }}
+            periodSeconds:  {{ $.Values.app_config.backend_probe.livenessProbe.periodSeconds }}
+            failureThreshold: {{ $.Values.app_config.backend_probe.livenessProbe.failureThreshold }}
+          {{ end }}
+{{ end }}
+{{- end }}

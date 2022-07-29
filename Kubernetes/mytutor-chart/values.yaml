@@ -1,0 +1,303 @@
+name: mytutor
+namespace: mytutor
+tag: 0.3.1.3
+global_lables:
+  env: testing
+  app.kubernetes.io/name: mytutor
+  app.kubernetes.io/instance: mytutor-f8dsh89hfsd8
+  app.kubernetes.io/managed-by: helm
+  app.kubernetes.io/version: "3.0"
+app_config:
+  # Backend probe
+  backend_probe:
+    readinessProbe:
+      initialDelaySeconds: 5
+      periodSeconds: 3
+      failureThreshold: 1
+    livenessProbe:
+      initialDelaySeconds: 20
+      periodSeconds: 3
+      failureThreshold: 1
+app:
+  # Frontend Setting
+  frontend:
+    name: mytutor-frontend
+    # Enable/Disable the application
+    enable: true
+    path: /opt3 # ingress path
+    app: frontend
+    deployment:
+      # match with service's selector
+      label: mytutor_frontend
+      replicas: 1
+      container:
+        image: williamtang2000/mytutor_frontend
+        tag: v4.4.1
+        ports:
+          http: 80
+      resources:
+        requests:
+          memory: "0.25G"
+          cpu: "250m"
+        limits:
+          memory: "0.5G"
+          cpu: "500m"
+    service:
+      port: 80
+      targetPort: 80
+  # Backend Setting
+  backend_python:
+    name: mytutor-backend-python
+    # Enable/Disable the python backend
+    enable: true
+    app: backend
+    # Ingress Path
+    path: /python
+    deployment:
+      label: mytutor_backend_python
+      replicas: 2
+      probe: http
+      container:
+        image: 180108084/cokapi_python
+        tag: v2
+        ports:
+          http: 8080
+      resources:
+        requests:
+          memory: "0.2G"
+          cpu: "200m"
+        limits:
+          memory: "1G"
+          cpu: "500m"
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10000
+        runAsGroup: 10000
+        capabilities:
+          drop:
+            - all
+    service:
+      port: 8080
+      targetPort: 8080
+  backend_anaconda:
+    name: mytutor-backend-anaconda
+    # Enable/Disable the python backend
+    enable: true
+    app: backend
+    # Ingress Path
+    path: /anaconda
+    deployment:
+      label: anaconda
+      replicas: 1
+      probe: http
+      container:
+        image: 180108084/cokapi_python_anaconda
+        tag: v3
+        ports:
+          http: 8081
+      resources:
+        requests:
+          memory: "0.5G"
+          cpu: "500m"
+        limits:
+          memory: "2G"
+          cpu: "1000m"
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10000
+        runAsGroup: 10000
+        capabilities:
+          drop:
+            - all
+    service:
+      port: 8081
+      targetPort: 8081
+  backend_java:
+    name: mytutor-backend-java
+    # Enable/Disable the python backend
+    enable: false
+    app: backend
+    # Ingress Path
+    path: /java
+    deployment:
+      label: java
+      replicas: 1
+      container:
+        image: 180108084/cokapi_java
+        tag: v2
+        ports:
+          http: 8083
+      resources:
+        requests:
+          memory: "0.5G"
+          cpu: "250m"
+        limits:
+          memory: "1G"
+          cpu: "500m"
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10000
+        runAsGroup: 10000
+        capabilities:
+          drop:
+            - all
+    service:
+      port: 8083
+      targetPort: 8083
+  backend_javascript:
+    name: mytutor-backend-javascript
+    # Enable/Disable the python backend
+    enable: false
+    app: backend
+    # Ingress Path
+    path: /javascript
+    deployment:
+      label: javascript
+      replicas: 1
+      container:
+        image: 180108084/cokapi_javascript
+        tag: v2
+        ports:
+          http: 8084
+      resources:
+        requests:
+          memory: "0.5G"
+          cpu: "250m"
+        limits:
+          memory: "1G"
+          cpu: "500m"
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10000
+        runAsGroup: 10000
+        capabilities:
+          drop:
+            - all
+    service:
+      port: 8084
+      targetPort: 8084
+  backend_cpp:
+    name: mytutor-backend-cpp
+    # Enable/Disable the python backend
+    enable: false
+    app: backend
+    # Ingress Path
+    path: /cpp
+    deployment:
+      label: cpp
+      replicas: 1
+      container:
+        image: 180108084/cokapi_c_cpp
+        tag: v3
+        ports:
+          http: 8082
+      resources:
+        requests:
+          memory: "0.5G"
+          cpu: "250m"
+        limits:
+          memory: "1G"
+          cpu: "500m"
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10000
+        runAsGroup: 10000
+    service:
+      port: 8082
+      targetPort: 8082
+  backend_c:
+    name: mytutor-backend-c
+    # Enable/Disable the backend
+    enable: false
+    app: backend
+    # Ingress Path
+    path: /c
+    deployment:
+      label: c
+      replicas: 1
+      container:
+        image: 180108084/cokapi_c_cpp
+        tag: v2
+        ports:
+          http: 8082
+      resources:
+        requests:
+          memory: "0.5G"
+          cpu: "250m"
+        limits:
+          memory: "1G"
+          cpu: "500m"
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10000
+        runAsGroup: 10000
+    service:
+      port: 8082
+      targetPort: 8082
+  backend_ruby:
+    name: mytutor-backend-ruby
+    # Enable/Disable the python backend
+    enable: false
+    app: backend
+    # Ingress Path
+    path: /ruby
+    deployment:
+      label: ruby
+      replicas: 1
+      container:
+        image: 180108084/cokapi_ruby
+        tag: v2
+        ports:
+          http: 8085
+      resources:
+        requests:
+          memory: "0.5G"
+          cpu: "250m"
+        limits:
+          memory: "1G"
+          cpu: "500m"
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10000
+        runAsGroup: 10000
+        capabilities:
+          drop:
+            - all
+    service:
+      port: 8085
+      targetPort: 8085
+  # Document server
+  document:
+    name: mytutor-document
+    # Enable/Disable the python backend
+    enable: true
+    app: docs
+    # Ingress Path
+    path: /docs
+    customize_ingress: true
+    deployment:
+      label: mytutor_document
+      replicas: 1
+      container:
+        image: williamtang2000/mytutor_sphinx_docs
+        tag: v4.0.1
+        ports:
+          http: 80
+      resources:
+        requests:
+          memory: "0.2G"
+          cpu: "200m"
+        limits:
+          memory: "0.4G"
+          cpu: "300m"
+    service:
+      port: 80
+      targetPort: 80
+ingress:
+  className: "nginx"
+  host: "mytutor.cs.cityu.edu.hk"
+tls:
+  enable: false
+  secretName: mytutor-tls
+kibana:
+  enable: false

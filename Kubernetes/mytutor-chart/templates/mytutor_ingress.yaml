@@ -1,0 +1,118 @@
+{{- $namespace := .Values.namespace }}
+{{- $labels_data := (dict "global_labels" .Values.global_lables "Chart" .Chart) -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: mytutor-ingress
+  namespace: {{ $namespace }}
+  annotations:
+    # Redirect path to /
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    # Cache JS, CSS, fonts, and images
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      if ($request_uri ~* \.(css|js|gif|jpe?g|png|svg|woff2)) {
+          add_header Cache-Control "public, max-age=31536000";
+      }
+    # Record user session and send the user request to the same pod
+    nginx.ingress.kubernetes.io/affinity: "cookie"
+    nginx.ingress.kubernetes.io/session-cookie-name: "route"
+    nginx.ingress.kubernetes.io/session-cookie-expires: "172800"
+    # Limit for each connection IP
+    nginx.ingress.kubernetes.io/limit-connections: "30" # Remove it when load/stress test
+    nginx.ingress.kubernetes.io/limit-rpm: "100"
+    # Save log file
+    nginx.ingress.kubernetes.io/enable-access-log: "true"
+  labels:
+    {{ include "app.labels" $labels_data | indent 4 }}
+spec:
+  {{ if .Values.tls.enable }}
+  tls:
+  - hosts:
+    - {{ .Values.ingress.host }}
+    secretName: {{ .Values.tls.secretName }}
+  {{ end }}
+  ingressClassName: {{ .Values.ingress.className }}
+  rules:
+    - host: {{ .Values.ingress.host }}
+      http:
+        paths:
+        {{- /* 
+          Loop all the apps if enable 
+        */}}
+          {{- range .Values.app }}
+          {{- if and (.enable) (ne "true" ( .customize_ingress | toString )) }}
+          - path: {{ .path }}(/|$)(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ .name }}-service
+                port:
+                  number: {{ .service.port }}
+          {{- end }}
+          {{- end }}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: mytutor-ingress-document
+  namespace: {{ $namespace }}
+  annotations:
+    # Cache JS, CSS, fonts, and images
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      if ($request_uri ~* \.(css|js|gif|jpe?g|png|svg|woff2)) {
+          add_header Cache-Control "public, max-age=31536000";
+      }
+    # Record user session and send the user request to the same pod
+    nginx.ingress.kubernetes.io/affinity: "cookie"
+    nginx.ingress.kubernetes.io/session-cookie-name: "route"
+    nginx.ingress.kubernetes.io/session-cookie-expires: "172800"
+    nginx.ingress.kubernetes.io/limit-rpm: "100"
+  labels:
+    {{ include "app.labels" $labels_data | indent 4 }}
+spec:
+  {{ if .Values.tls.enable }}
+  tls:
+  - hosts:
+    - {{ .Values.ingress.host }}
+    secretName: {{ .Values.tls.secretName }}
+  {{ end }}
+  ingressClassName: {{ .Values.ingress.className }}
+  rules:
+    - host: {{ .Values.ingress.host }}
+      http:
+        paths:
+        {{- /* 
+          Loop all the apps if enable 
+        */}}
+          {{- with .Values.app.document }}
+          {{- if and (.enable) (eq "true" ( .customize_ingress | toString )) }}
+          - path: {{ .path }}
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ .name }}-service
+                port:
+                  number: {{ .service.port }}
+          {{- end }}
+          {{- end }}
+{{- if .Values.kibana.enable }}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  namespace: logging
+  name: gateway-ingress
+spec:
+  ingressClassName: {{ .Values.ingress.className }}
+  rules:
+    - host: {{ .Values.ingress.host }}
+      http: 
+        paths:
+          - path: /kibana
+            pathType: Prefix
+            backend:
+              service:
+                name: kibana-logging
+                port:
+                  number: 5601
+{{- end }}

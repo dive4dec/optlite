@@ -1,0 +1,25 @@
+ingress:
+  host: "mytutorlocal.app" # "mytutor.cs.cityu.edu.hk"
+app:
+  frontend:
+    enable: true
+  backend_python:
+    enable: true
+    deployment:
+      replicas: 1
+  backend_anaconda:
+    enable: true
+    deployment:
+      replicas: 1
+  backend_java:
+    enable: false
+  backend_javascript:
+    enable: false
+  backend_cpp:
+    enable: false
+  backend_c:
+    enable: false
+  backend_ruby:
+    enable: false
+  document:
+    enable: true
