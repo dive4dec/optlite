@@ -624,6 +624,7 @@ export class OptLiveFrontend extends OptFrontend {
 
 
         let result: any = await asyncRun(`
+from js import code
 import sys, pg_logger, json
 from optparse import OptionParser
 
@@ -647,7 +648,6 @@ def json_finalizer(input_code, output_trace):
  json_output = json.dumps(ret, indent=None)
  out_s.write(json_output)
 
-code="""${codeToExec}"""
 pg_logger.exec_script_str_local(code,
            None,
            False,
@@ -660,7 +660,7 @@ jsonp(False, out_s.getvalue())
 
 
 
-           `, { 'TEST': 'py3' });
+           `, { code:  codeToExec });
         execCallback(JSON.parse(result.results))
       }
        call();

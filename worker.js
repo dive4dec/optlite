@@ -28,9 +28,9 @@ with open("pg_logger.py", "wb") as f:
   
   `)
   
-  let pkg = pyodide.pyimport("pg_encoder");
+  // let pkg = pyodide.pyimport("pg_encoder");
   
-  let pkgg = pyodide.pyimport("pg_logger");
+  // let pkgg = pyodide.pyimport("pg_logger");
 
 }
 let pyodideReadyPromise = loadPyodideAndPackages();

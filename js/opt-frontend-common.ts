@@ -401,6 +401,7 @@ export abstract class AbstractBaseFrontend {
 
 
         let result: any = await asyncRun(`
+from js import code
 import sys, pg_logger, json
 from optparse import OptionParser
 
@@ -424,20 +425,15 @@ def json_finalizer(input_code, output_trace):
   json_output = json.dumps(ret, indent=None)
   out_s.write(json_output)
 
-code="""${codeToExec}"""
 pg_logger.exec_script_str_local(code,
             None,
             False,
             False,
             json_finalizer,allow_all_modules=True)
 
-
-
 jsonp(False, out_s.getvalue())
 
-
-
-            `, { 'TEST': 'pyodide' });
+            `, { code:  codeToExec});
  
         callbackWrapper(JSON.parse(result.results))
       }
