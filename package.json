@@ -1,31 +1,20 @@
 {
-  "name": "v6-frontend",
-  "version": "1.0.0",
-  "description": "OPT v6",
+  "name": "optlite",
+  "version": "0.0.1",
+  "description": "Serverless OPT",
   "main": "bundle.js",
   "repository": "https://github.com/pgbovine/OnlinePythonTutor",
   "license": "BSD-3-Clause",
   "scripts": {
-    "build": "webpack --devtool sourcemap --progress --colors --watch",
-    "start:dev": "webpack-dev-server -d",
-    "production-build": "rm -f build/* && webpack && python add_cache_busting_query_strings.py"
+    "build": "webpack --mode=development --devtool inline-source-map --progress",
+    "build:prod": "webpack --mode=production",
+    "watch": "webpack --devtool sourcemap --progress --watch",
+    "start": "webpack serve --open",
+    "production-build": "rm -f build/* && webpack",
+    "clean": "rimraf build"
   },
   "dependencies": {
-    "css-loader": "^0.28.11",
-    "css-selector-tokenizer": "^0.7.0",
-    "d3": "^3.5.6",
-    "fastparse": "^1.1.2",
-    "fs-extra": "^6.0.1",
-    "json-stable-stringify": "^1.0.1",
-    "on-build-webpack": "^0.1.0",
-    "pixelmatch": "^4.0.2",
-    "puppeteer": "^1.20.0",
-    "script-loader": "^0.7.2",
-    "style-loader": "^0.21.0",
-    "ts-loader": "^3.5.0",
-    "typescript": "^2.1.6",
-    "url-loader": "^1.0.1",
-    "webpack": "^3.11.0"
+    "d3": "^3.5.6"
   },
   "devDependencies": {
     "@types/ace": "0.0.47",
@@ -39,6 +28,14 @@
     "@types/node": "^14.6.2",
     "@types/qtip2": "^2.2.31",
     "@types/requirejs": "^2.1.33",
-    "webpack-dev-server": "^2.11.5"
+    "css-loader": "^6.7.1",
+    "rimraf": "^3.0.2",
+    "script-loader": "^0.7.2",
+    "style-loader": "^3.3.1",
+    "ts-loader": "^9.3.1",
+    "typescript": "^4.7.4",
+    "webpack": "^5.74.0",
+    "webpack-cli": "^4.10.0",
+    "webpack-dev-server": "^4.9.3"
   }
 }

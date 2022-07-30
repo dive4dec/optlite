@@ -387,6 +387,5 @@ function populateTogetherJsShareUrl() {
 
 // END - shared session stuff
 
-*/
 
 

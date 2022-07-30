@@ -67,10 +67,24 @@ module.exports = {
     },
 
     module: {
-        loaders: [
-            { test: /\.css$/, loader: "style-loader!css-loader" }, // CSS
-            { test: /\.(png|jpg)$/, loader: 'url-loader' }, // images
-            { test: /\.ts$/, loader: 'ts-loader' } // TypeScript
+        rules: [
+            { 
+              test: /\.css$/, 
+              use: ["style-loader", "css-loader"] 
+            }, // CSS
+            {
+              test: /\.(png|svg|jpg|jpeg|gif)$/i,
+              type: 'asset/resource',
+            }, // Image
+            { 
+              test: /\.tsx?$/,
+              use: 'ts-loader',
+              exclude: /node_modules/,
+            }, // TypeScript
+            {
+              test: /\.ttf$/,
+              type: 'asset/resource'
+            }  // Font
         ]
     },
 

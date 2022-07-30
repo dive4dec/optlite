@@ -286,7 +286,7 @@ function experimentalPopUpSyntaxErrorSurvey() {
       // TODO: maybe use the 'center' parameter of scrollToLine to make
       // it automatically look centered, instead of this hack:
       if ((offendingLine - 3) > 0) {
-        (bubbleAceEditor as any /* TS too strict */).scrollToLine(offendingLine - 3);
+        (bubbleAceEditor /* TS too strict */).scrollToLine(offendingLine - 3);
       }
 
       // don't forget htmlspecialchars
