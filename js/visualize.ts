@@ -2,10 +2,9 @@
 // Copyright (C) Philip Guo (philip@pgbovine.net)
 // LICENSE: https://github.com/pgbovine/OnlinePythonTutor/blob/master/LICENSE.txt
 
-import { OptFrontendSharedSessions, TogetherJS } from './opt-shared-sessions';
 import { assert, htmlspecialchars } from './pytutor';
 import { OptTestcases, redSadFace, yellowHappyFace } from './opt-testcases';
-
+import { OptFrontend } from './opt-frontend';
 require('./lib/jquery-3.0.0.min.js');
 require('./lib/jquery.qtip.js');
 require('../css/jquery.qtip.css');
@@ -76,7 +75,10 @@ SyntaxErrorSurveyBubble.prototype.qTipID = function () {
 
 
 // augment with a "Create test cases" pane
-export class OptFrontendWithTestcases extends OptFrontendSharedSessions {
+export class OptFrontendWithTestcases extends 
+OptFrontend
+
+{
   optTests: OptTestcases;
 
   prevExecutionExceptionObjLst = []; // previous consecutive executions with "compile"-time exceptions
