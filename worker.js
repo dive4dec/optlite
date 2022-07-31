@@ -7,7 +7,7 @@ importScripts("https://cdn.jsdelivr.net/pyodide/v0.20.0/full/pyodide.js");
 
 async function loadPyodideAndPackages() {
   self.pyodide = await loadPyodide();
-  await self.pyodide.loadPackage(["numpy", "pytz"]);
+  await self.pyodide.loadPackage(["numpy", "pytz", "pandas"]);
 
   await pyodide.runPythonAsync(`
 from pyodide.http import pyfetch
@@ -27,7 +27,15 @@ with open("pg_logger.py", "wb") as f:
   f.write(await response2.bytes())
   
   `)
-  
+
+  await pyodide.runPythonAsync(`
+  from pyodide.http import pyfetch
+  response = await pyfetch(".//optlite.py")
+  with open("optlite.py", "wb") as f:
+      f.write(await response.bytes())
+`)
+
+
   // let pkg = pyodide.pyimport("pg_encoder");
   
   // let pkgg = pyodide.pyimport("pg_logger");

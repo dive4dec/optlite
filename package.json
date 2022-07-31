@@ -6,10 +6,10 @@
   "repository": "https://github.com/pgbovine/OnlinePythonTutor",
   "license": "BSD-3-Clause",
   "scripts": {
-    "build": "webpack --mode=development --devtool inline-source-map --progress",
+    "build": "webpack --mode=development --devtool source-map --progress",
     "build:prod": "webpack --mode=production",
-    "watch": "webpack --devtool sourcemap --progress --watch",
-    "start": "webpack serve --open",
+    "watch": "webpack --mode=development --devtool source-map --progress --watch",
+    "start": "webpack server --mode=development --progress",
     "production-build": "rm -f build/* && webpack",
     "clean": "rimraf build"
   },

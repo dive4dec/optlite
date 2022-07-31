@@ -61,10 +61,9 @@ require('script-loader!./lib/ace/src-min-noconflict/mode-c_cpp.js');
 require('script-loader!./lib/ace/src-min-noconflict/mode-java.js');
 require('script-loader!./lib/ace/src-min-noconflict/mode-ruby.js');
 
-const {
-  PYTHON3_VERSION,
-  PYODIDE_VERSION,
-} = require('./common/version.js')
+// const {
+//   PYODIDE_VERSION,
+// } = require('./common/version.js')
 
 var optLiveFrontend: OptLiveFrontend;
 
@@ -623,44 +622,10 @@ export class OptLiveFrontend extends OptFrontend {
       let call = async () => {
 
 
-        let result: any = await asyncRun(`
+        let result: any = await asyncRun(
+`import optlite
 from js import code
-import sys, pg_logger, json
-from optparse import OptionParser
-
-request = False
-try:
- import StringIO # NB: don't use cStringIO since it doesn't support unicode!!!
-except:
- import io as StringIO # py3
- 
-def jsonp(request, dictionary):
- if (request):
-   return "%s(%s)" % (request, dictionary)
- return dictionary
-
-
-out_s = StringIO.StringIO()
-
-
-def json_finalizer(input_code, output_trace):
- ret = dict(code=input_code, trace=output_trace)
- json_output = json.dumps(ret, indent=None)
- out_s.write(json_output)
-
-pg_logger.exec_script_str_local(code,
-           None,
-           False,
-           False,
-           json_finalizer,allow_all_modules=True)
-
-
-
-jsonp(False, out_s.getvalue())
-
-
-
-           `, { code:  codeToExec });
+optlite.exec_script(code)`, { code:  codeToExec });
         execCallback(JSON.parse(result.results))
       }
        call();

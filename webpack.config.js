@@ -1,4 +1,5 @@
-var webpack = require('webpack');
+const webpack = require('webpack');
+const path = require('path');
 // var WebpackOnBuildPlugin = require('on-build-webpack');
 // var exec = require('child_process').exec;
 
@@ -91,7 +92,11 @@ module.exports = {
     //devtool: 'source-map', // source maps are very important to ease debugging
     // nix this, and use the command-line option "--devtool sourcemap" to create
     // source maps in a debugging build
-    devServer:{
-      port: 8000
-    }
+    devServer: {
+      static: {
+        directory: path.join(__dirname, './'),
+      },
+      compress: true,
+      port: 8000,
+    },
 };
