@@ -1,12 +1,28 @@
+import { OptLite } from './global'
+
 const pyodideWorker = new Worker("worker.js");
 
 const callbacks = {};
 
-pyodideWorker.onmessage = (event) => {
+const initWorker = (() => {
+  let id = -1;
+  return () => {
+    return new Promise((onSuccess) => {
+      callbacks[id] = onSuccess;
+      pyodideWorker.postMessage({
+        id, 
+        ...OptLite
+      });
+    });
+  }
+})();
+let init = initWorker();
+
+pyodideWorker.onmessage = async (event) => {
   const { id, ...data } = event.data;
   const onSuccess = callbacks[id];
   delete callbacks[id];
-  onSuccess(data);
+  onSuccess(data); 
 };
 
 const asyncRun = (() => {
@@ -15,12 +31,15 @@ const asyncRun = (() => {
     // the id could be generated more carefully
     id = (id + 1) % Number.MAX_SAFE_INTEGER;
     return new Promise((onSuccess) => {
-      callbacks[id] = onSuccess;
-      pyodideWorker.postMessage({
-        ...context,
-        python: script,
-        id,
-      });
+      console.log(init)
+      init.then(() => {
+        callbacks[id] = onSuccess;
+        pyodideWorker.postMessage({
+          ...context,
+          python: script,
+          id,
+        });  
+      })
     });
   };
 })();

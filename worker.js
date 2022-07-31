@@ -7,7 +7,7 @@ importScripts("https://cdn.jsdelivr.net/pyodide/v0.20.0/full/pyodide.js");
 
 async function loadPyodideAndPackages() {
   self.pyodide = await loadPyodide();
-  await self.pyodide.loadPackage(["numpy", "pytz", "pandas"]);
+  // await self.pyodide.loadPackage(["numpy", "pytz", "pandas"]);
 
   await pyodide.runPythonAsync(`
 from pyodide.http import pyfetch
@@ -35,29 +35,35 @@ with open("pg_logger.py", "wb") as f:
       f.write(await response.bytes())
 `)
 
-
-  // let pkg = pyodide.pyimport("pg_encoder");
-  
-  // let pkgg = pyodide.pyimport("pg_logger");
-
 }
 let pyodideReadyPromise = loadPyodideAndPackages();
+
 
 self.onmessage = async (event) => {
   // make sure loading is done
   await pyodideReadyPromise;
-  // Don't bother yet with this line, suppose our API is built in such a way:
-  const { id, python, ...context } = event.data;
   // The worker copies the context in its own "memory" (an object mapping name to values)
-  for (const key of Object.keys(context)) {
-    self[key] = context[key];
-  }
-  // Now is the easy part, the one that is similar to working in the main thread:
-  try {
-    await self.pyodide.loadPackagesFromImports(python);
-    let results = await self.pyodide.runPythonAsync(python);
-    self.postMessage({ results, id });
-  } catch (error) {
-    self.postMessage({ error: error.message, id });
+  if (event.data.id < 0) { // initialize worker
+    try {
+      let id = event.data.id;
+      let results = await self.pyodide.loadPackage(event.data.package);
+      self.postMessage({ results, id });
+    } catch (error) {
+      self.postMessage({ error: "Failed to initialize worker: "+error.message, id });
+    }
+  } else { // run code
+    const { id, python, ...context } = event.data;
+    for (const key of Object.keys(context)) {
+      self[key] = context[key];
+    }
+    // Now is the easy part, the one that is similar to working in the main thread:
+    try {
+      await self.pyodide.loadPackagesFromImports(python);
+      let results = await self.pyodide.runPythonAsync(python);
+
+      self.postMessage({ results, id });
+    } catch (error) {
+      self.postMessage({ error: "Failed to run code" + error.message, id });
+    }
   }
 };
