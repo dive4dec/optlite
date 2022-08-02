@@ -1,0 +1,41 @@
+{
+  "name": "optlite",
+  "version": "0.0.1",
+  "description": "Serverless OPT",
+  "main": "bundle.js",
+  "repository": "https://github.com/pgbovine/OnlinePythonTutor",
+  "license": "BSD-3-Clause",
+  "scripts": {
+    "build": "webpack --mode=development --devtool source-map --progress",
+    "build:prod": "webpack --mode=production",
+    "watch": "webpack --mode=development --devtool source-map --progress --watch",
+    "start": "webpack server --mode=development --progress",
+    "production-build": "rm -f build/* && webpack",
+    "clean": "rimraf build"
+  },
+  "dependencies": {
+    "d3": "^3.5.6"
+  },
+  "devDependencies": {
+    "@types/ace": "0.0.47",
+    "@types/d3": "^3.5.38",
+    "@types/diff-match-patch": "^1.0.32",
+    "@types/jquery": "^2.0.34",
+    "@types/jquery.bbq": "^1.2.31",
+    "@types/jquery.simplemodal": "^1.4.30",
+    "@types/jqueryui": "^1.12.16",
+    "@types/lodash": "^4.14.74",
+    "@types/node": "^14.6.2",
+    "@types/qtip2": "^2.2.31",
+    "@types/requirejs": "^2.1.33",
+    "css-loader": "^6.7.1",
+    "rimraf": "^3.0.2",
+    "script-loader": "^0.7.2",
+    "style-loader": "^3.3.1",
+    "ts-loader": "^9.3.1",
+    "typescript": "^4.7.4",
+    "webpack": "^5.74.0",
+    "webpack-cli": "^4.10.0",
+    "webpack-dev-server": "^4.9.3"
+  }
+}
