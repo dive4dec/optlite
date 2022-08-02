@@ -41,28 +41,28 @@ require('../css/pytutor');
 
 
 const {
-  PYTHON3_VERSION,
-  PYTHON_ANACONDA_VERSION,
-  JAVA_VERSION,
-  C_VERSION,
-  CPP_VERSION,
-  JAVASCRIPT_VERSION,
-  TYPESCRIPT_VERSION,
-  RUBY_VERSION,
+  // PYTHON3_VERSION,
+  // PYTHON_ANACONDA_VERSION,
+  // JAVA_VERSION,
+  // C_VERSION,
+  // CPP_VERSION,
+  // JAVASCRIPT_VERSION,
+  // TYPESCRIPT_VERSION,
+  // RUBY_VERSION,
   PYODIDE_VERSION,
 } = require('./common/version.js')
 
-const {
-  PYTHON3_VALUE,
-  PYTHON_ANACONDA_VALUE,
-  JAVA_VALUE,
-  C_VALUE,
-  CPP_VALUE,
-  JAVASCRIPT_VALUE,
-  TYPESCRIPT_VALUE,
-  RUBY_VALUE,
-  PYODIDE_VALUE,
-} = require('./common/value.js')
+// const {
+//   PYTHON3_VALUE,
+//   PYTHON_ANACONDA_VALUE,
+//   JAVA_VALUE,
+//   C_VALUE,
+//   CPP_VALUE,
+//   JAVASCRIPT_VALUE,
+//   TYPESCRIPT_VALUE,
+//   RUBY_VALUE,
+//   PYODIDE_VALUE,
+// } = require('./common/value.js')
 import * as d3 from 'd3';
 import {unsupportedFeaturesStr} from './footer-html';
 //var test_d3 = d3.map()
@@ -3884,37 +3884,37 @@ class CodeDisplay {
       this.domRoot.find('#editBtn').click(function(){return false;}); // DISABLE the link!
     }
 
-    if (lang !== undefined) {
-      if (lang === 'js') {
-        this.domRoot.find('#langDisplayDiv').html(JAVASCRIPT_VERSION);
-      } else if (lang === 'ts') {
-        this.domRoot.find('#langDisplayDiv').html(TYPESCRIPT_VERSION);
-      } else if (lang === 'ruby') {
-        this.domRoot.find('#langDisplayDiv').html(RUBY_VERSION);
-      } else if (lang === 'java') {
-        this.domRoot.find('#langDisplayDiv').html(JAVA_VERSION);
-      } else if (lang === 'py2') {
-        this.domRoot.find('#langDisplayDiv').html('Python 2.7');
-      } else if (lang === 'py3') {
-        this.domRoot.find('#langDisplayDiv').html(PYTHON3_VERSION);
-      } else if (lang === 'py3anaconda') {
-        this.domRoot.find('#langDisplayDiv').html('Python 3.8 with <a target="_blank" href="https://docs.anaconda.com/anaconda/">Anaconda 2021.05</a> <font color="#e93f34">EXPERIMENTAL!</font><br/>(much slower than <a target="_blank" href="visualize.html#py=3">regular Python</a>, but lets you import more modules)');
-      } else if (lang === 'c') {
-        if (this.owner.params.embeddedMode) {
-          this.domRoot.find('#langDisplayDiv').html(C_VERSION);
-        } else {
-          this.domRoot.find('#langDisplayDiv').html('C (gcc 4.8, C11)<br/><font color="#e93f34">EXPERIMENTAL!</font> <a href="https://github.com/pgbovine/OnlinePythonTutor/blob/master/unsupported-features.md#c-and-c-unsupported-features" target="_blank">known limitations</a>');
-        }
-      } else if (lang === 'cpp') {
-        if (this.owner.params.embeddedMode) {
-          this.domRoot.find('#langDisplayDiv').html('C++ (gcc 4.8, C++11)');
-        } else {
-          this.domRoot.find('#langDisplayDiv').html('C++ (gcc 4.8, C++11)<br/><font color="#e93f34">EXPERIMENTAL!</font> <a href="https://github.com/pgbovine/OnlinePythonTutor/blob/master/unsupported-features.md#c-and-c-unsupported-features" target="_blank">known limitations</a>');
-        }
-      } else {
+    //if (lang !== undefined) {
+      // if (lang === 'js') {
+      //   this.domRoot.find('#langDisplayDiv').html(JAVASCRIPT_VERSION);
+      // } else if (lang === 'ts') {
+      //   this.domRoot.find('#langDisplayDiv').html(TYPESCRIPT_VERSION);
+      // } else if (lang === 'ruby') {
+      //   this.domRoot.find('#langDisplayDiv').html(RUBY_VERSION);
+      // } else if (lang === 'java') {
+      //   this.domRoot.find('#langDisplayDiv').html(JAVA_VERSION);
+      // } else if (lang === 'py2') {
+      //   this.domRoot.find('#langDisplayDiv').html('Python 2.7');
+      // } else if (lang === 'py3') {
+      //   this.domRoot.find('#langDisplayDiv').html(PYTHON3_VERSION);
+      // } else if (lang === 'py3anaconda') {
+      //   this.domRoot.find('#langDisplayDiv').html('Python 3.8 with <a target="_blank" href="https://docs.anaconda.com/anaconda/">Anaconda 2021.05</a> <font color="#e93f34">EXPERIMENTAL!</font><br/>(much slower than <a target="_blank" href="visualize.html#py=3">regular Python</a>, but lets you import more modules)');
+      // } else if (lang === 'c') {
+      //   if (this.owner.params.embeddedMode) {
+      //     this.domRoot.find('#langDisplayDiv').html(C_VERSION);
+      //   } else {
+      //     this.domRoot.find('#langDisplayDiv').html('C (gcc 4.8, C11)<br/><font color="#e93f34">EXPERIMENTAL!</font> <a href="https://github.com/pgbovine/OnlinePythonTutor/blob/master/unsupported-features.md#c-and-c-unsupported-features" target="_blank">known limitations</a>');
+      //   }
+      // } else if (lang === 'cpp') {
+      //   if (this.owner.params.embeddedMode) {
+      //     this.domRoot.find('#langDisplayDiv').html('C++ (gcc 4.8, C++11)');
+      //   } else {
+      //     this.domRoot.find('#langDisplayDiv').html('C++ (gcc 4.8, C++11)<br/><font color="#e93f34">EXPERIMENTAL!</font> <a href="https://github.com/pgbovine/OnlinePythonTutor/blob/master/unsupported-features.md#c-and-c-unsupported-features" target="_blank">known limitations</a>');
+      //   }
+      // } else {
         this.domRoot.find('#langDisplayDiv').html(PYODIDE_VERSION);
-      }
-    }
+      //}
+   // }
 
   }
 
