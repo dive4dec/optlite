@@ -33,7 +33,7 @@ require('script-loader!./lib/ace/src-min-noconflict/mode-c_cpp.js');
 require('script-loader!./lib/ace/src-min-noconflict/mode-java.js');
 require('script-loader!./lib/ace/src-min-noconflict/mode-ruby.js');
 
-require('script-loader!./lib/socket.io-client/socket.io.js');
+// require('script-loader!./lib/socket.io-client/socket.io.js');
 
 // need to directly import the class for type checking to work
 import {AbstractBaseFrontend, generateUUID, supports_html5_storage} from './opt-frontend-common';
