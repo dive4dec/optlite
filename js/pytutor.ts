@@ -333,9 +333,9 @@ export class ExecutionVisualizer {
     this.domRoot = tmpRoot.find('div.ExecutionVisualizer');
     this.domRootD3 = tmpRootD3.select('div.ExecutionVisualizer');
 
-    if (this.params.lang === 'java') {
-      this.activateJavaFrontend(); // ohhhh yeah! do this before initializing codeOutputLines (ugh order dependency)
-    }
+    // if (this.params.lang === 'java') {
+    //   this.activateJavaFrontend(); // ohhhh yeah! do this before initializing codeOutputLines (ugh order dependency)
+    // }
 
 
     var lines = this.curInputCode.split('\n');
@@ -3856,22 +3856,23 @@ class CodeDisplay {
 
     if (editCodeBaseURL) {
       // kinda kludgy
-      var pyVer = '2'; // default
-      if (lang === 'js') {
-        pyVer = 'js';
-      } else if (lang === 'ts') {
-        pyVer = 'ts';
-      } else if (lang === 'java') {
-        pyVer = 'java';
-      } else if (lang === 'py3') {
-        pyVer = '3';
-      } else if (lang === 'py3anaconda') {
-        pyVer = 'py3anaconda';
-      } else if (lang === 'c') {
-        pyVer = 'c';
-      } else if (lang === 'cpp') {
-        pyVer = 'cpp';
-      }
+      // var pyVer = '2'; // default
+      let pyVer = 'pyodide';
+      // if (lang === 'js') {
+      //   pyVer = 'js';
+      // } else if (lang === 'ts') {
+      //   pyVer = 'ts';
+      // } else if (lang === 'java') {
+      //   pyVer = 'java';
+      // } else if (lang === 'py3') {
+      //   pyVer = '3';
+      // } else if (lang === 'py3anaconda') {
+      //   pyVer = 'py3anaconda';
+      // } else if (lang === 'c') {
+      //   pyVer = 'c';
+      // } else if (lang === 'cpp') {
+      //   pyVer = 'cpp';
+      // }
 
       var urlStr = $.param.fragment(editCodeBaseURL,
                                     {code: this.codToDisplay, py: pyVer},

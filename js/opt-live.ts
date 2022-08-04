@@ -55,11 +55,11 @@ import * as d3 from 'd3';
 // just punt and use global script dependencies
 require("script-loader!./lib/ace/src-min-noconflict/ace.js");
 require('script-loader!./lib/ace/src-min-noconflict/mode-python.js');
-require('script-loader!./lib/ace/src-min-noconflict/mode-javascript.js');
-require('script-loader!./lib/ace/src-min-noconflict/mode-typescript.js');
-require('script-loader!./lib/ace/src-min-noconflict/mode-c_cpp.js');
-require('script-loader!./lib/ace/src-min-noconflict/mode-java.js');
-require('script-loader!./lib/ace/src-min-noconflict/mode-ruby.js');
+// require('script-loader!./lib/ace/src-min-noconflict/mode-javascript.js');
+// require('script-loader!./lib/ace/src-min-noconflict/mode-typescript.js');
+// require('script-loader!./lib/ace/src-min-noconflict/mode-c_cpp.js');
+// require('script-loader!./lib/ace/src-min-noconflict/mode-java.js');
+// require('script-loader!./lib/ace/src-min-noconflict/mode-ruby.js');
 
 // const {
 //   PYODIDE_VERSION,

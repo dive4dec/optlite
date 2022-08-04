@@ -258,19 +258,19 @@ function experimentalPopUpSyntaxErrorSurvey() {
       // https://github.com/ajaxorg/ace/wiki/Syntax-validation
       s.setOption("useWorker", false);
 
-      var lang = prevExecutionExceptionObj.myAppState.py;
+      // var lang = prevExecutionExceptionObj.myAppState.py;
       var mod = 'python';
-      if (lang === 'java') {
-        mod = 'java';
-      } else if (lang === 'js') {
-        mod = 'javascript';
-      } else if (lang === 'ts') {
-        mod = 'typescript';
-      } else if (lang === 'ruby') {
-        mod = 'ruby';
-      } else if (lang === 'c' || lang === 'cpp') {
-        mod = 'c_cpp';
-      }
+      // if (lang === 'java') {
+      //   mod = 'java';
+      // } else if (lang === 'js') {
+      //   mod = 'javascript';
+      // } else if (lang === 'ts') {
+      //   mod = 'typescript';
+      // } else if (lang === 'ruby') {
+      //   mod = 'ruby';
+      // } else if (lang === 'c' || lang === 'cpp') {
+      //   mod = 'c_cpp';
+      // }
       s.setMode("ace/mode/" + mod);
 
       bubbleAceEditor.setReadOnly(true);

@@ -27,17 +27,17 @@ require('./lib/jquery-3.0.0.min.js');
 // just punt and use global script dependencies
 require("script-loader!./lib/ace/src-min-noconflict/ace.js");
 require('script-loader!./lib/ace/src-min-noconflict/mode-python.js');
-require('script-loader!./lib/ace/src-min-noconflict/mode-javascript.js');
-require('script-loader!./lib/ace/src-min-noconflict/mode-typescript.js');
-require('script-loader!./lib/ace/src-min-noconflict/mode-c_cpp.js');
-require('script-loader!./lib/ace/src-min-noconflict/mode-java.js');
-require('script-loader!./lib/ace/src-min-noconflict/mode-ruby.js');
+// require('script-loader!./lib/ace/src-min-noconflict/mode-javascript.js');
+// require('script-loader!./lib/ace/src-min-noconflict/mode-typescript.js');
+// require('script-loader!./lib/ace/src-min-noconflict/mode-c_cpp.js');
+// require('script-loader!./lib/ace/src-min-noconflict/mode-java.js');
+// require('script-loader!./lib/ace/src-min-noconflict/mode-ruby.js');
 
 // require('script-loader!./lib/socket.io-client/socket.io.js');
 
 // need to directly import the class for type checking to work
-import {AbstractBaseFrontend, generateUUID, supports_html5_storage} from './opt-frontend-common';
-import {ExecutionVisualizer, assert, htmlspecialchars} from './pytutor';
+import { AbstractBaseFrontend, generateUUID, supports_html5_storage } from './opt-frontend-common';
+import { ExecutionVisualizer, assert, htmlspecialchars } from './pytutor';
 
 require('../css/opt-frontend.css');
 require('../css/opt-testcases.css');
@@ -45,16 +45,16 @@ require('../css/opt-testcases.css');
 export const allTabsRE = new RegExp('\t', 'g');
 
 
-const JAVA_BLANK_TEMPLATE = `public class YourClassNameHere {
-    public static void main(String[] args) {
+// const JAVA_BLANK_TEMPLATE = `public class YourClassNameHere {
+//     public static void main(String[] args) {
 
-    }
-}`;
+//     }
+// }`;
 
-const CPP_BLANK_TEMPLATE = `int main() {
+// const CPP_BLANK_TEMPLATE = `int main() {
 
-  return 0;
-}`;
+//   return 0;
+// }`;
 
 const CODE_SNAPSHOT_DEBOUNCE_MS = 1000;
 const SUBMIT_UPDATE_HISTORY_INTERVAL_MS = 1000 * 60;
@@ -78,7 +78,7 @@ export class OptFrontend extends AbstractBaseFrontend {
 
   preseededCurInstr: number = undefined;
 
-  constructor(params={}) {
+  constructor(params = {}) {
     super(params);
 
     $('#genEmbedBtn').bind('click', () => {
@@ -88,11 +88,11 @@ export class OptFrontend extends AbstractBaseFrontend {
       delete myArgs.mode;
       (myArgs as any).codeDivWidth = ExecutionVisualizer.DEFAULT_EMBEDDED_CODE_DIV_WIDTH;
       (myArgs as any).codeDivHeight = ExecutionVisualizer.DEFAULT_EMBEDDED_CODE_DIV_HEIGHT;
-      
+
       var myArgs = this.getAppState();
       var embedUrlStr = $.param.fragment(window.location.href, myArgs, 2); // 2 means 'override'
       embedUrlStr = sanitizeURL(embedUrlStr);
-      
+
       //var domain = "http://mytutor.cs.cityu.edu.hk/opt3/"; // for deployment
       //var embedUrlStr = $.param.fragment(domain + "iframe-embed.html", myArgs, 2 /* clobber all */);
       //embedUrlStr = sanitizeURL(embedUrlStr);
@@ -154,12 +154,12 @@ export class OptFrontend extends AbstractBaseFrontend {
     // string options and anything else the user wants to override with.
     if (supports_html5_storage() && !(params as any).disableLocalStorageToggles) {
       var lsKeys = ['cumulative',
-                    'heapPrimitives',
-                    'py',
-                    'textReferences'];
+        'heapPrimitives',
+        'py',
+        'textReferences'];
       // restore toggleState if available
       var lsOptions = {};
-      $.each(lsKeys, function(i, k) {
+      $.each(lsKeys, function (i, k) {
         var v = localStorage.getItem(k);
         if (v) {
           lsOptions[k] = v;
@@ -170,7 +170,7 @@ export class OptFrontend extends AbstractBaseFrontend {
       // store in localStorage whenever user explicitly changes any toggle option:
       $('#cumulativeModeSelector,#heapPrimitivesSelector,#textualMemoryLabelsSelector,#pythonVersionSelector').change(() => {
         var ts = this.getToggleState();
-        $.each(ts, function(k, v) {
+        $.each(ts, function (k, v) {
           localStorage.setItem(k, v);
         });
       });
@@ -179,16 +179,16 @@ export class OptFrontend extends AbstractBaseFrontend {
     // when you leave or reload the page, submit an updateHistoryJSON if you
     // have one. beforeunload seems to work better than unload(), but it's
     // still a bit flaky ... TODO: investigate :(
-    $(window).on('beforeunload', () => {
-      //this.submitUpdateHistory('beforeunload');
-      // don't return anything, or a modal dialog box might pop up
-    });
+    //  $(window).on('beforeunload', () => {
+    //this.submitUpdateHistory('beforeunload');
+    // don't return anything, or a modal dialog box might pop up
+    //  });
 
     // just do this as well, even though it might be hella redundant
-    $(window).on('unload', () => {
-      //this.submitUpdateHistory('unload');
-      // don't return anything, or a modal dialog box might pop up
-    });
+    //  $(window).on('unload', () => {
+    //this.submitUpdateHistory('unload');
+    // don't return anything, or a modal dialog box might pop up
+    //   });
 
     // periodically do submitUpdateHistory() to handle the case when
     // someone is simply idle on the page without reloading it or
@@ -234,21 +234,21 @@ export class OptFrontend extends AbstractBaseFrontend {
 
   // this feature was deployed on 2015-09-17, so check logs for
   // viz_interaction.py
- // submitUpdateHistory(why) {
-    // if (this.myVisualizer) {
-    //   var encodedUh = this.compressUpdateHistoryList();
-    //   var encodedUhJSON = JSON.stringify(encodedUh);
+  // submitUpdateHistory(why) {
+  // if (this.myVisualizer) {
+  //   var encodedUh = this.compressUpdateHistoryList();
+  //   var encodedUhJSON = JSON.stringify(encodedUh);
 
-    //   var myArgs: any = {session_uuid: this.sessionUUID,
-    //                      user_uuid: this.userUUID,
-    //                      updateHistoryJSON: encodedUhJSON};
-    //   if (why) {
-    //     myArgs.why = why;
-    //   }
-      // $.get('viz_interaction.py', myArgs, (dat) => {});
-      //this.sendLogRequest('viz_interaction.py',myArgs);
-    //}
- // }
+  //   var myArgs: any = {session_uuid: this.sessionUUID,
+  //                      user_uuid: this.userUUID,
+  //                      updateHistoryJSON: encodedUhJSON};
+  //   if (why) {
+  //     myArgs.why = why;
+  //   }
+  // $.get('viz_interaction.py', myArgs, (dat) => {});
+  //this.sendLogRequest('viz_interaction.py',myArgs);
+  //}
+  // }
 
   initAceEditor(height: number) {
     assert(!this.pyInputAceEditor);
@@ -266,7 +266,7 @@ export class OptFrontend extends AbstractBaseFrontend {
     this.pyInputAceEditor.$blockScrolling = Infinity; // kludgy to shut up weird warnings
 
     // auto-grow height as fit
-    this.pyInputAceEditor.setOptions({minLines: 18, maxLines: 1000});
+    this.pyInputAceEditor.setOptions({ minLines: 18, maxLines: 1000 });
 
     $('#codeInputPane').css('width', '700px');
     $('#codeInputPane').css('height', height + 'px'); // VERY IMPORTANT so that it works on I.E., ugh!
@@ -302,38 +302,38 @@ export class OptFrontend extends AbstractBaseFrontend {
   }
 
   setAceMode() {
-    var selectorVal = $('#pythonVersionSelector').val();
-    var mod;
-    var tabSize = 2;
-    var editorVal = $.trim(this.pyInputGetValue());
+    //var selectorVal = $('#pythonVersionSelector').val();
+   // var mod;
+    //var tabSize = 2;
+    //var editorVal = $.trim(this.pyInputGetValue());
 
-    if (editorVal === JAVA_BLANK_TEMPLATE || editorVal === CPP_BLANK_TEMPLATE) {
-      editorVal = '';
-      this.pyInputSetValue(editorVal);
-    }
+    // if (editorVal === JAVA_BLANK_TEMPLATE || editorVal === CPP_BLANK_TEMPLATE) {
+    //   editorVal = '';
+    //   this.pyInputSetValue(editorVal);
+    // }
 
-    if (selectorVal === 'java') {
-      mod = 'java';
-      if (editorVal === '') {
-        this.pyInputSetValue(JAVA_BLANK_TEMPLATE);
-      }
-    } else if (selectorVal === 'js') {
-      mod = 'javascript';
-    } else if (selectorVal === 'ts') {
-      mod = 'typescript';
-    } else if (selectorVal === 'ruby') {
-      mod = 'ruby';
-    } else if (selectorVal === 'c' || selectorVal == 'cpp') {
-      mod = 'c_cpp';
-      if (editorVal === '') {
-        this.pyInputSetValue(CPP_BLANK_TEMPLATE);
-      }
-    } else {
-      assert(selectorVal === '2' || selectorVal == '3' || selectorVal == 
-      'py3anaconda' || selectorVal == 'pyodide');
-      mod = 'python';
-      tabSize = 4; // PEP8 style standards
-    }
+    // if (selectorVal === 'java') {
+    //   mod = 'java';
+    //   if (editorVal === '') {
+    //     this.pyInputSetValue(JAVA_BLANK_TEMPLATE);
+    //   }
+    // } else if (selectorVal === 'js') {
+    //   mod = 'javascript';
+    // } else if (selectorVal === 'ts') {
+    //   mod = 'typescript';
+    // } else if (selectorVal === 'ruby') {
+    //   mod = 'ruby';
+    // } else if (selectorVal === 'c' || selectorVal == 'cpp') {
+    //   mod = 'c_cpp';
+    //   if (editorVal === '') {
+    //     this.pyInputSetValue(CPP_BLANK_TEMPLATE);
+    //   }
+    // } else {
+    //   assert(selectorVal === '2' || selectorVal == '3' || selectorVal ==
+    //     'py3anaconda' || selectorVal == 'pyodide');
+      let mod = 'python';
+      let tabSize = 4; // PEP8 style standards
+   // }
     assert(mod);
 
     var s = this.pyInputAceEditor.getSession();
@@ -345,17 +345,17 @@ export class OptFrontend extends AbstractBaseFrontend {
     var s = this.pyInputAceEditor.getSession();
     s.clearAnnotations();
 
-    if (selectorVal === 'java') {
-      $("#javaOptionsPane").show();
-    } else {
-      $("#javaOptionsPane").hide();
-    }
+    // if (selectorVal === 'java') {
+    //   $("#javaOptionsPane").show();
+    // } else {
+    //   $("#javaOptionsPane").hide();
+    // }
 
-    if (selectorVal === 'js' || selectorVal === '2' || selectorVal === '3'|| selectorVal === 'pyodide') {
+    //if (selectorVal === 'js' || selectorVal === '2' || selectorVal === '3' || selectorVal === 'pyodide') {
       $("#liveModeBtn").show();
-    } else {
-      $("#liveModeBtn").hide();
-    }
+   // } else {
+   //   $("#liveModeBtn").hide();
+   // }
 
     this.clearFrontendError();
   }
@@ -366,7 +366,7 @@ export class OptFrontend extends AbstractBaseFrontend {
 
   pyInputSetValue(dat) {
     this.pyInputAceEditor.setValue(dat.rtrim() /* kill trailing spaces */,
-                                   -1 /* do NOT select after setting text */);
+      -1 /* do NOT select after setting text */);
     $('#urlOutput,#urlOutputShortened,#embedCodeOutput').val('');
     this.clearFrontendError();
     // also scroll to top to make the UI more usable on smaller monitors
@@ -391,7 +391,7 @@ export class OptFrontend extends AbstractBaseFrontend {
     super.executeCodeFromScratch();
   }
 
-  executeCode(forceStartingInstr=0, forceRawInputLst=undefined) {
+  executeCode(forceStartingInstr = 0, forceRawInputLst = undefined) {
     // if you're in display mode, kick back into edit mode before executing
     // or else the display might not refresh properly ... ugh krufty
     if (this.appMode != 'edit') {
@@ -407,17 +407,17 @@ export class OptFrontend extends AbstractBaseFrontend {
     frontendOptionsObj.startingInstruction = forceStartingInstr;
 
     this.snapshotCodeDiff(); // do ONE MORE snapshot before we execute, or else
-                             // we'll miss a diff if the user hits Visualize Execution
-                             // very shortly after finishing coding
+    // we'll miss a diff if the user hits Visualize Execution
+    // very shortly after finishing coding
     if (this.deltaObj) {
       this.deltaObj.executeTime = new Date().getTime();
     }
 
     this.executeCodeAndCreateViz(this.pyInputGetValue(),
-                                 $('#pythonVersionSelector').val(),
-                                 backendOptionsObj,
-                                 frontendOptionsObj,
-                                 'pyOutputPane');
+      $('#pythonVersionSelector').val(),
+      backendOptionsObj,
+      frontendOptionsObj,
+      'pyOutputPane');
 
     this.initDeltaObj(); // clear deltaObj to start counting over again
   }
@@ -430,9 +430,11 @@ export class OptFrontend extends AbstractBaseFrontend {
         // TODO: implement for codeopticon
         // debounce to compress a bit ... 250ms feels "right"
         $.doTimeout('updateOutputLogEvent', 250, () => {
-          var obj: any = {type: 'updateOutput', step: args.myViz.curInstr,
-                     curline: args.myViz.curLineNumber,
-                     prevline: args.myViz.prevLineNumber};
+          var obj: any = {
+            type: 'updateOutput', step: args.myViz.curInstr,
+            curline: args.myViz.curLineNumber,
+            prevline: args.myViz.prevLineNumber
+          };
           // optional fields
           if (args.myViz.curLineExceptionMsg) {
             obj.exception = args.myViz.curLineExceptionMsg;
@@ -482,8 +484,8 @@ export class OptFrontend extends AbstractBaseFrontend {
     // zero-indexed
     this.myVisualizer.updateHistory = [];
     this.myVisualizer.updateHistory.push([this.myVisualizer.curInstr,
-                                          this.myVisualizer.creationTime,
-                                          this.myVisualizer.curTrace.length]);
+    this.myVisualizer.creationTime,
+    this.myVisualizer.curTrace.length]);
   }
 
   handleUncaughtException(trace) {
@@ -492,10 +494,12 @@ export class OptFrontend extends AbstractBaseFrontend {
       if (errorLineNo !== undefined && errorLineNo != NaN) {
         // highlight the faulting line
         var s = this.pyInputAceEditor.getSession();
-        s.setAnnotations([{row: errorLineNo,
-                           column: null, /* for TS typechecking */
-                           type: 'error',
-                           text: trace[0].exception_msg}]);
+        s.setAnnotations([{
+          row: errorLineNo,
+          column: null, /* for TS typechecking */
+          type: 'error',
+          text: trace[0].exception_msg
+        }]);
         this.pyInputAceEditor.gotoLine(errorLineNo + 1 /* one-indexed */);
         // if we have both a line and column number, then move over to
         // that column. (going to the line first prevents weird
@@ -511,10 +515,10 @@ export class OptFrontend extends AbstractBaseFrontend {
   ignoreAjaxError(settings) {
     // other idiosyncratic errors to ignore
     if ((settings.url.indexOf('syntax_err_survey.py') > -1) ||
-        (settings.url.indexOf('runtime_err_survey.py') > -1) ||
-        (settings.url.indexOf('eureka_survey.py') > -1) ||
-        //(settings.url.indexOf('error_log.py') > -1) ||
-        (settings.url.indexOf('viz_interaction.py') > -1)) {
+      (settings.url.indexOf('runtime_err_survey.py') > -1) ||
+      (settings.url.indexOf('eureka_survey.py') > -1) ||
+      //(settings.url.indexOf('error_log.py') > -1) ||
+      (settings.url.indexOf('viz_interaction.py') > -1)) {
       return true;
     }
     return false;
@@ -525,8 +529,10 @@ export class OptFrontend extends AbstractBaseFrontend {
     // v is the version number
     //   1 (version 1 was released on 2014-11-05)
     //   2 (version 2 was released on 2015-09-16, added a startTime field)
-    this.deltaObj = {start: this.pyInputGetValue(), deltas: [], v: 2,
-                     startTime: new Date().getTime()};
+    this.deltaObj = {
+      start: this.pyInputGetValue(), deltas: [], v: 2,
+      startTime: new Date().getTime()
+    };
   }
 
   snapshotCodeDiff() {
@@ -537,7 +543,7 @@ export class OptFrontend extends AbstractBaseFrontend {
     if (this.curCode != newCode) {
       var diff = this.dmp.diff_toDelta(this.dmp.diff_main(this.curCode, newCode));
       //var patch = this.dmp.patch_toText(this.dmp.patch_make(this.curCode, newCode));
-      var delta = {t: timestamp, d: diff};
+      var delta = { t: timestamp, d: diff };
       this.deltaObj.deltas.push(delta);
 
       this.curCode = newCode;
@@ -546,7 +552,7 @@ export class OptFrontend extends AbstractBaseFrontend {
   }
 
   logEditDelta(delta) {
-    this.logEventCodeopticon({type: 'editCode', delta: delta});
+    this.logEventCodeopticon({ type: 'editCode', delta: delta });
   }
 
   enterDisplayMode() {
@@ -563,7 +569,7 @@ export class OptFrontend extends AbstractBaseFrontend {
     this.appMode = newAppMode;
 
     if (this.appMode === undefined || this.appMode == 'edit' ||
-        !this.myVisualizer /* subtle -- if no visualizer, default to edit mode */) {
+      !this.myVisualizer /* subtle -- if no visualizer, default to edit mode */) {
       this.appMode = 'edit'; // canonicalize
 
       $("#pyInputPane").show();
@@ -575,7 +581,7 @@ export class OptFrontend extends AbstractBaseFrontend {
       // Back button flow
       $("#pyOutputPane").empty();
       // right before destroying, submit the visualizer's updateHistory
-     // this.submitUpdateHistory('editMode');
+      // this.submitUpdateHistory('editMode');
       this.myVisualizer = null; // yikes!
 
       $(document).scrollTop(0); // scroll to top to make UX better on small monitors
@@ -587,8 +593,8 @@ export class OptFrontend extends AbstractBaseFrontend {
       var s: any = { mode: 'edit' };
       // keep these persistent so that they survive page reloads
       // keep these persistent so that they survive page reloads
-      if (typeof codeopticonSession !== "undefined") {s.cosession = codeopticonSession;}
-      if (typeof codeopticonUsername !== "undefined") {s.couser = codeopticonUsername;}
+      if (typeof codeopticonSession !== "undefined") { s.cosession = codeopticonSession; }
+      if (typeof codeopticonUsername !== "undefined") { s.couser = codeopticonUsername; }
       $.bbq.pushState(s, 2 /* completely override other hash strings to keep URL clean */);
     } else if (this.appMode == 'display' || this.appMode == 'visualize' /* 'visualize' is deprecated */) {
       assert(this.myVisualizer);
@@ -611,7 +617,7 @@ export class OptFrontend extends AbstractBaseFrontend {
       $('#pyOutputPane #editBtn').off().click(() => {
         this.enterEditMode();
       });
-      var v = $('#pythonVersionSelector').val();
+      //var v = $('#pythonVersionSelector').val();
 
       // 2018-03-15 - removed "Live programming" link from
       // visualization mode to simplify the UI, even if it drives
@@ -632,8 +638,8 @@ export class OptFrontend extends AbstractBaseFrontend {
 
       var s: any = { mode: 'display' };
       // keep these persistent so that they survive page reloads
-      if (typeof codeopticonSession !== "undefined") {s.cosession = codeopticonSession;}
-      if (typeof codeopticonUsername !== "undefined") {s.couser = codeopticonUsername;}
+      if (typeof codeopticonSession !== "undefined") { s.cosession = codeopticonSession; }
+      if (typeof codeopticonUsername !== "undefined") { s.couser = codeopticonUsername; }
       $.bbq.pushState(s, 2 /* completely override other hash strings to keep URL clean */);
     } else {
       assert(false);
@@ -642,7 +648,7 @@ export class OptFrontend extends AbstractBaseFrontend {
     $('#urlOutput,#urlOutputShortened,#embedCodeOutput').val(''); // clear to avoid stale values
 
     // log at the end after appMode gets canonicalized
-    this.logEventCodeopticon({type: 'updateAppDisplay', mode: this.appMode, appState: this.getAppState()});
+    this.logEventCodeopticon({ type: 'updateAppDisplay', mode: this.appMode, appState: this.getAppState() });
     assert(this.appMode === 'edit' || this.appMode === 'display'); // postcondition
   }
 
@@ -659,16 +665,18 @@ export class OptFrontend extends AbstractBaseFrontend {
   getAppState() {
     assert(this.originFrontendJsFile);
 
-    var ret = {code: this.pyInputGetValue(),
-               mode: this.appMode,
-               origin: this.originFrontendJsFile,
-               cumulative: $('#cumulativeModeSelector').val(),
-               heapPrimitives: $('#heapPrimitivesSelector').val(),
-               textReferences: $('#textualMemoryLabelsSelector').val(),
-               py: $('#pythonVersionSelector').val(),
-               /* ALWAYS JSON serialize rawInputLst, even if it's empty! */
-               rawInputLstJSON: JSON.stringify(this.rawInputLst),
-               curInstr: this.myVisualizer ? this.myVisualizer.curInstr : undefined};
+    var ret = {
+      code: this.pyInputGetValue(),
+      mode: this.appMode,
+      origin: this.originFrontendJsFile,
+      cumulative: $('#cumulativeModeSelector').val(),
+      heapPrimitives: $('#heapPrimitivesSelector').val(),
+      textReferences: $('#textualMemoryLabelsSelector').val(),
+      py: $('#pythonVersionSelector').val(),
+      /* ALWAYS JSON serialize rawInputLst, even if it's empty! */
+      rawInputLstJSON: JSON.stringify(this.rawInputLst),
+      curInstr: this.myVisualizer ? this.myVisualizer.curInstr : undefined
+    };
 
     // keep this really clean by avoiding undefined values
     if (ret.cumulative === undefined)
@@ -715,8 +723,8 @@ export class OptFrontend extends AbstractBaseFrontend {
     }
   }
 
-  demoModeChanged() {}; // NOP; subclasses need to override
-  loadCodcastFile() {}; // NOP; subclasses need to override
+  demoModeChanged() { }; // NOP; subclasses need to override
+  loadCodcastFile() { }; // NOP; subclasses need to override
 
   parseQueryString() {
     var queryStrOptions = this.getQueryStringOptions();
@@ -748,8 +756,8 @@ export class OptFrontend extends AbstractBaseFrontend {
     }
 
     if ((queryStrOptions.appMode == 'display' ||
-         queryStrOptions.appMode == 'visualize' /* deprecated */) &&
-        queryStrOptions.preseededCode /* jump to 'display' mode only with preseeded code */) {
+      queryStrOptions.appMode == 'visualize' /* deprecated */) &&
+      queryStrOptions.preseededCode /* jump to 'display' mode only with preseeded code */) {
       this.executeCode(this.preseededCurInstr); // will switch to 'display' mode
     }
     $.bbq.removeState(); // clean up the URL no matter what

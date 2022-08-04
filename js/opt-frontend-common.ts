@@ -348,20 +348,20 @@ export abstract class AbstractBaseFrontend {
 
     this.clearFrontendError();
     this.startExecutingCode(frontendOptionsObj.startingInstruction);
-    frontendOptionsObj.lang = pyState;
+    //frontendOptionsObj.lang = pyState;
     // kludgy exceptions
-    if (pyState === '2') {
-      frontendOptionsObj.lang = 'py2';
-    } else if (pyState === '3') {
-      frontendOptionsObj.lang = 'py3';
-    }  
-      else if (pyState === 'pyodide') {
+    // if (pyState === '2') {
+    //   frontendOptionsObj.lang = 'py2';
+    // } else if (pyState === '3') {
+    //   frontendOptionsObj.lang = 'py3';
+    // }  
+    //   else if (pyState === 'pyodide') {
       frontendOptionsObj.lang = 'pyodide';
-    } 
-    else if (pyState === 'java') {
-      // TODO: should we still keep this exceptional case?
-      frontendOptionsObj.disableHeapNesting = true; // never nest Java objects, seems like a good default
-    }
+   // } 
+    // else if (pyState === 'java') {
+    //   // TODO: should we still keep this exceptional case?
+    //   frontendOptionsObj.disableHeapNesting = true; // never nest Java objects, seems like a good default
+    // }
 
     // if we don't have any deltas, then don't bother sending deltaObj:
     // NB: not all subclasses will initialize this.deltaObj
@@ -395,7 +395,7 @@ export abstract class AbstractBaseFrontend {
     }
 
     // everything below here is an ajax (async) call to the server ...
-    if (frontendOptionsObj.lang === 'pyodide') {
+    //if (frontendOptionsObj.lang === 'pyodide') {
       //this.pyodideRunner.runCode(callbackWrapper);
       let call = async () => {
 
@@ -407,7 +407,7 @@ optlite.exec_script(code)`, { code:  codeToExec });
         callbackWrapper(JSON.parse(result.results))
       }
       call();
-    } 
+   // } 
     // else if (!this.hostConfig.isK8s) {
     //   //assert (pyState !== '2' && pyState !== '3');
     //   /* 
