@@ -65,6 +65,7 @@ require('script-loader!./lib/ace/src-min-noconflict/mode-python.js');
 //   PYODIDE_VERSION,
 // } = require('./common/version.js')
 
+
 var optLiveFrontend: OptLiveFrontend;
 
 
@@ -146,7 +147,8 @@ export class OptLiveFrontend extends OptFrontend {
 
   // override verison in opt-frontend.ts
   setAceMode() {
-    var v = $('#pythonVersionSelector').val();
+    var v = 
+    $('#pythonVersionSelector').val();
     if (v !== 'js' && v !== '2' && v !== '3' && v !== 'pyodide') {
       // we don't support live mode for this value of v, so set it to
       // python 2 by default
@@ -587,7 +589,7 @@ export class OptLiveFrontend extends OptFrontend {
 
     // var backendScript = this.hostConfig.getLangSettingToBackendScript()[pyState];
     // assert(backendScript);
-    var jsonp_endpoint = null;
+    // var jsonp_endpoint = null;
 
     // if (pyState === '2') {
     //   frontendOptionsObj.lang = 'py2';
