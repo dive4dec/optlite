@@ -219,8 +219,8 @@ export abstract class AbstractBaseFrontend {
 
   getBaseBackendOptionsObj() {
     var ret = {
-      cumulative_mode: ($('#cumulativeModeSelector').val() == 'true'),
-      heap_primitives: ($('#heapPrimitivesSelector').val() == 'true'),
+      // cumulative_mode: ($('#cumulativeModeSelector').val() == 'true'),
+      // heap_primitives: ($('#heapPrimitivesSelector').val() == 'true'),
       show_only_outputs: false, // necessary for legacy reasons, ergh!
       origin: this.originFrontendJsFile
     };
@@ -229,9 +229,9 @@ export abstract class AbstractBaseFrontend {
 
   getBaseFrontendOptionsObj() {
     var ret = {// tricky: selector 'true' and 'false' values are strings!
-      disableHeapNesting: (($('#heapPrimitivesSelector').val() == 'true') ||
-        ($('#heapPrimitivesSelector').val() == 'nevernest')),
-      textualMemoryLabels: ($('#textualMemoryLabelsSelector').val() == 'true'),
+      // disableHeapNesting: (($('#heapPrimitivesSelector').val() == 'true') ||
+      //   ($('#heapPrimitivesSelector').val() == 'nevernest')),
+      // textualMemoryLabels: ($('#textualMemoryLabelsSelector').val() == 'true'),
       executeCodeWithRawInputFunc: this.executeCodeWithRawInput.bind(this),
 
       // always use the same visualizer ID for all

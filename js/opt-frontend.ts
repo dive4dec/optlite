@@ -168,12 +168,12 @@ export class OptFrontend extends AbstractBaseFrontend {
       this.setToggleOptions(lsOptions);
 
       // store in localStorage whenever user explicitly changes any toggle option:
-      $('#cumulativeModeSelector,#heapPrimitivesSelector,#textualMemoryLabelsSelector,#pythonVersionSelector').change(() => {
-        var ts = this.getToggleState();
-        $.each(ts, function (k, v) {
-          localStorage.setItem(k, v);
-        });
-      });
+      // $('#cumulativeModeSelector,#heapPrimitivesSelector,#textualMemoryLabelsSelector,#pythonVersionSelector').change(() => {
+      //   var ts = this.getToggleState();
+      //   $.each(ts, function (k, v) {
+      //     localStorage.setItem(k, v);
+      //   });
+      // });
     }
 
     // when you leave or reload the page, submit an updateHistoryJSON if you
@@ -669,9 +669,9 @@ export class OptFrontend extends AbstractBaseFrontend {
       code: this.pyInputGetValue(),
       mode: this.appMode,
       origin: this.originFrontendJsFile,
-      cumulative: $('#cumulativeModeSelector').val(),
-      heapPrimitives: $('#heapPrimitivesSelector').val(),
-      textReferences: $('#textualMemoryLabelsSelector').val(),
+      // cumulative: $('#cumulativeModeSelector').val(),
+      // heapPrimitives: $('#heapPrimitivesSelector').val(),
+      // textReferences: $('#textualMemoryLabelsSelector').val(),
       py: $('#pythonVersionSelector').val(),
       /* ALWAYS JSON serialize rawInputLst, even if it's empty! */
       rawInputLstJSON: JSON.stringify(this.rawInputLst),
@@ -679,12 +679,12 @@ export class OptFrontend extends AbstractBaseFrontend {
     };
 
     // keep this really clean by avoiding undefined values
-    if (ret.cumulative === undefined)
-      delete ret.cumulative;
-    if (ret.heapPrimitives === undefined)
-      delete ret.heapPrimitives;
-    if (ret.textReferences === undefined)
-      delete ret.textReferences;
+    // if (ret.cumulative === undefined)
+    //   delete ret.cumulative;
+    // if (ret.heapPrimitives === undefined)
+    //   delete ret.heapPrimitives;
+    // if (ret.textReferences === undefined)
+    //   delete ret.textReferences;
     if (ret.py === undefined)
       delete ret.py;
     if (ret.rawInputLstJSON === undefined)
@@ -712,15 +712,15 @@ export class OptFrontend extends AbstractBaseFrontend {
     if (dat.py !== undefined) {
       $('#pythonVersionSelector').val(dat.py);
     }
-    if (dat.cumulative !== undefined) {
-      $('#cumulativeModeSelector').val(dat.cumulative);
-    }
-    if (dat.heapPrimitives !== undefined) {
-      $('#heapPrimitivesSelector').val(dat.heapPrimitives);
-    }
-    if (dat.textReferences !== undefined) {
-      $('#textualMemoryLabelsSelector').val(dat.textReferences);
-    }
+    // if (dat.cumulative !== undefined) {
+    //   $('#cumulativeModeSelector').val(dat.cumulative);
+    // }
+    // if (dat.heapPrimitives !== undefined) {
+    //   $('#heapPrimitivesSelector').val(dat.heapPrimitives);
+    // }
+    // if (dat.textReferences !== undefined) {
+    //   $('#textualMemoryLabelsSelector').val(dat.textReferences);
+    // }
   }
 
   demoModeChanged() { }; // NOP; subclasses need to override

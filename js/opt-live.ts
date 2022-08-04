@@ -109,11 +109,11 @@ export class OptLiveFrontend extends OptFrontend {
       .attr('points', SVG_ARROW_POLYGON)
       .attr('fill', darkArrowColor);
 
-    $('#cumulativeModeSelector,#heapPrimitivesSelector,#textualMemoryLabelsSelector,#pythonVersionSelector').change(() => {
-      this.setAceMode();
-      // force a re-execute on a toggle switch
-      this.executeCodeFromScratch();
-    });
+    // $('#cumulativeModeSelector,#heapPrimitivesSelector,#textualMemoryLabelsSelector,#pythonVersionSelector').change(() => {
+    //   this.setAceMode();
+    //   // force a re-execute on a toggle switch
+    //   this.executeCodeFromScratch();
+    // });
 
     this.setAceMode(); // set syntax highlighting at the end
     $("#pyOutputPane").show();
