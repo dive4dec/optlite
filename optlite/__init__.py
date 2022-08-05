@@ -1,4 +1,6 @@
-import io, json, pg_logger
+import io, json
+from . import pg_logger
+from ._version import __version__
 
 
 def exec_script(code):

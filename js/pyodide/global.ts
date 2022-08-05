@@ -13,7 +13,7 @@ declare const global: {OptLite: OptLiteConfig};
  */
 if (typeof global.OptLite === 'undefined') {
     global.OptLite = {
-        package: ["numpy"]
+        package: []
     } as OptLiteConfig;
 }
 

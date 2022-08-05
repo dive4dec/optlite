@@ -1,39 +1,39 @@
-// webworker.js
-
-// Setup your project to serve `py-worker.js`. You should also serve
-// `pyodide.js`, and all its associated `.asm.js`, `.data`, `.json`,
-// and `.wasm` files as well:
+// web worker
 importScripts("https://cdn.jsdelivr.net/pyodide/v0.20.0/full/pyodide.js");
 
 async function loadPyodideAndPackages() {
   self.pyodide = await loadPyodide();
   // await self.pyodide.loadPackage(["numpy", "pytz", "pandas"]);
-
+  await self.pyodide.loadPackage("micropip");
   await pyodide.runPythonAsync(`
-from pyodide.http import pyfetch
-
-response = await pyfetch(".//pg_encoder.py")
-with open("pg_encoder.py", "wb") as f:
-  f.write(await response.bytes())
-  
-  `)
-  
-  
-  await pyodide.runPythonAsync(`
-from pyodide.http import pyfetch
-
-response2 = await pyfetch(".//pg_logger.py")
-with open("pg_logger.py", "wb") as f:
-  f.write(await response2.bytes())
-  
-  `)
-
-  await pyodide.runPythonAsync(`
-  from pyodide.http import pyfetch
-  response = await pyfetch(".//optlite.py")
-  with open("optlite.py", "wb") as f:
-      f.write(await response.bytes())
+import micropip
+micropip.install('optlite')
 `)
+//   await pyodide.runPythonAsync(`
+// from pyodide.http import pyfetch
+
+// response = await pyfetch(".//pg_encoder.py")
+// with open("pg_encoder.py", "wb") as f:
+//   f.write(await response.bytes())
+  
+//   `)
+  
+  
+//   await pyodide.runPythonAsync(`
+// from pyodide.http import pyfetch
+
+// response2 = await pyfetch(".//pg_logger.py")
+// with open("pg_logger.py", "wb") as f:
+//   f.write(await response2.bytes())
+  
+//   `)
+
+//   await pyodide.runPythonAsync(`
+//   from pyodide.http import pyfetch
+//   response = await pyfetch(".//optlite.py")
+//   with open("optlite.py", "wb") as f:
+//       f.write(await response.bytes())
+// `)
 
 }
 let pyodideReadyPromise = loadPyodideAndPackages();

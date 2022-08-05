@@ -47,7 +47,7 @@ if is_python3:
   import io # expose regular io for Python3 users too
 else:
   import StringIO
-import pg_encoder
+from . import pg_encoder
 
 
 # upper-bound on the number of executed lines, in order to guard against
