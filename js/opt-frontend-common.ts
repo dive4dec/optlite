@@ -398,13 +398,8 @@ export abstract class AbstractBaseFrontend {
     //if (frontendOptionsObj.lang === 'pyodide') {
       //this.pyodideRunner.runCode(callbackWrapper);
       let call = async () => {
-
-        let result: any = await asyncRun(
-`import optlite
-from js import code
-optlite.exec_script(code)`, { code:  codeToExec });
- 
-        callbackWrapper(JSON.parse(result.results))
+        let result: any = await asyncRun(codeToExec, {});
+        callbackWrapper(JSON.parse(result.results));
       }
       call();
    // } 

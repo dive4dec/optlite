@@ -40,17 +40,17 @@ require('./lib/jquery.ba-dotimeout.min.js'); // for $.doTimeout
 require('../css/pytutor');
 
 
-const {
-  // PYTHON3_VERSION,
-  // PYTHON_ANACONDA_VERSION,
-  // JAVA_VERSION,
-  // C_VERSION,
-  // CPP_VERSION,
-  // JAVASCRIPT_VERSION,
-  // TYPESCRIPT_VERSION,
-  // RUBY_VERSION,
-  PYODIDE_VERSION,
-} = require('./common/version.js')
+// const {
+//   // PYTHON3_VERSION,
+//   // PYTHON_ANACONDA_VERSION,
+//   // JAVA_VERSION,
+//   // C_VERSION,
+//   // CPP_VERSION,
+//   // JAVASCRIPT_VERSION,
+//   // TYPESCRIPT_VERSION,
+//   // RUBY_VERSION,
+//   PYODIDE_VERSION,
+// } = require('./common/version.js')
 
 // const {
 //   PYTHON3_VALUE,
@@ -3913,7 +3913,7 @@ class CodeDisplay {
       //     this.domRoot.find('#langDisplayDiv').html('C++ (gcc 4.8, C++11)<br/><font color="#e93f34">EXPERIMENTAL!</font> <a href="https://github.com/pgbovine/OnlinePythonTutor/blob/master/unsupported-features.md#c-and-c-unsupported-features" target="_blank">known limitations</a>');
       //   }
       // } else {
-        this.domRoot.find('#langDisplayDiv').html(PYODIDE_VERSION);
+        // this.domRoot.find('#langDisplayDiv').html(PYODIDE_VERSION);
       //}
    // }
 

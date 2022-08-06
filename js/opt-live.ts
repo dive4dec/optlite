@@ -477,11 +477,12 @@ export class OptLiveFrontend extends OptFrontend {
     this.pyInputAceEditor.setDisplayIndentGuides(false); // to avoid annoying gray vertical lines
 
     this.pyInputAceEditor.$blockScrolling = Infinity; // kludgy to shut up weird warnings
+    this.pyInputAceEditor.setOptions({minLines: 10, maxLines: 1000});
 
     $("#pyInputPane,#codeInputPane")
       .css('width', '550px')
-      .css('min-width', '250px')
-      .css('max-width', '700px'); // don't let it get too ridiculously wide
+      .css('min-width', '250px');
+      // .css('max-width', '700px'); // don't let it get too ridiculously wide
     $('#codeInputPane').css('height', height + 'px'); // VERY IMPORTANT so that it works on I.E., ugh!
 
     // make it resizable!
@@ -623,12 +624,7 @@ export class OptLiveFrontend extends OptFrontend {
     }
     if (pyState === 'pyodide') {
       let call = async () => {
-
-
-        let result: any = await asyncRun(
-          `import optlite
-from js import code
-optlite.exec_script(code)`, { code: codeToExec });
+        let result: any = await asyncRun(codeToExec, {});
         execCallback(JSON.parse(result.results))
       }
       call();

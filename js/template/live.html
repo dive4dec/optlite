@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<!--[if lt IE 7 ]> <html lang="en" class="ie6" <% if(htmlWebpackPlugin.files.manifest) { %> manifest="<%= htmlWebpackPlugin.files.manifest %>"<% } %>> <![endif]-->
+<!--[if IE 7 ]>    <html lang="en" class="ie7" <% if(htmlWebpackPlugin.files.manifest) { %> manifest="<%= htmlWebpackPlugin.files.manifest %>"<% } %>> <![endif]-->
+<!--[if IE 8 ]>    <html lang="en" class="ie8" <% if(htmlWebpackPlugin.files.manifest) { %> manifest="<%= htmlWebpackPlugin.files.manifest %>"<% } %>> <![endif]-->
+<!--[if IE 9 ]>    <html lang="en" class="ie9" <% if(htmlWebpackPlugin.files.manifest) { %> manifest="<%= htmlWebpackPlugin.files.manifest %>"<% } %>> <![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!--> <html lang="en" class="" <% if(htmlWebpackPlugin.files.manifest) { %> manifest="<%= htmlWebpackPlugin.files.manifest %>"<% } %>> <!--<![endif]-->
+
+<head>
+  <meta charset="utf-8">
+  <title><%= htmlWebpackPlugin.options.title || 'Webpack App'%></title>
+
+  <% if (htmlWebpackPlugin.files.favicon) { %>
+  <link rel="shortcut icon" href="<%= htmlWebpackPlugin.files.favicon%>">
+  <% } %>
+  <% if (htmlWebpackPlugin.options.mobile) { %>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <% } %>
+
+  <% for (var css in htmlWebpackPlugin.files.css) { %>
+  <link href="<%= htmlWebpackPlugin.files.css[css] %>" rel="stylesheet">
+  <% } %>
+</head>
+
+<body>
+
+  <table>
+    <tr>
+      <td valign="top">
+        <div id="pyInputPane">
+          <div id="codeInputWarnings" style="display: none;">Write code in
+            <select id="pythonVersionSelector" >
+              <option value="pyodide">Pyodide Serverless</option>
+            </select>
+
+            <span id="liveModeExtraWarning" style="color: #888; font-size: 8pt; float: right;">(drag lower right corner to resize code editor)</span>
+          </div>
+          <div id="someoneIsTypingDiv" style="color: #e93f34; font-weight: bold; display: none;">Someone is typing ...</div>
+
+          <div id="codeInputPane"></div>
+          <div id="legendDiv"></div>
+          <div id="executionSlider" style="margin-top: 10px;"></div>
+
+          <!-- copied and pasted from pytutor.js
+               TODO: integrate all this together and modularize -->
+
+          <div id="vcrControls" style="display: none;">
+            <button id="jmpFirstInstr", type="button">&lt;&lt; First</button>
+            <button id="jmpStepBack", type="button">&lt; Prev</button>
+            <button id="jmpStepFwd", type="button">Next &gt;</button>
+            <button id="jmpLastInstr", type="button">Last &gt;&gt;</button>
+            <button id="genUrlBtn" class="smallBtn" type="button">Permalink</button>
+            <input type="text" id="urlOutput" size="10"/>
+          </div>
+          <div id="curInstr" style="display: none;"></div>
+
+          <div id="rawUserInputDiv" style="display: none;">
+            <span id="userInputPromptStr"></span>
+            <input type="text" id="raw_input_textbox" size="30"/>
+            <button id="raw_input_submit_btn">Submit</button>
+          </div>
+          <div id="frontendErrorOutput"></div>
+        </div>
+      </td>
+      <td valign="top">
+        <div id="pyOutputPane"></div>
+      </td>
+    </tr>
+  </table>
+
+<div id="optionsPane" style="display: none;">
+  <select id="cumulativeModeSelector">
+    <option value="false">hide exited frames [default]</option>
+    <option value="true">show exited frames (Python)</option>
+    <!-- <option value="holistic">holistic mode (experimental)</option> -->
+  </select>
+  <select id="heapPrimitivesSelector">
+    <option value="false">inline primitives and try to nest objects</option>
+    <option value="nevernest" selected>inline primitives but don't nest objects [default]</option>
+    <option value="true">render all objects on the heap (Python)</option>
+  </select>
+  <select id="textualMemoryLabelsSelector">
+    <option value="false">draw pointers as arrows [default]</option>
+    <option value="true">use text labels for pointers</option>
+  </select>
+</div>
+
+<% if (htmlWebpackPlugin.options.unsupportedBrowser) { %>
+    <style>.unsupported-browser { display: none; }</style>
+    <div class="unsupported-browser">
+      Sorry, your browser is not supported.  Please upgrade to
+      the latest version or switch your browser to use this site.
+      See <a href="http://outdatedbrowser.com/">outdatedbrowser.com</a>
+      for options.
+    </div>
+    <% } %>
+    
+    <% if (htmlWebpackPlugin.options.appMountId) { %>
+    <div id="<%= htmlWebpackPlugin.options.appMountId%>"></div>
+    <% } %>
+    
+    <% if (htmlWebpackPlugin.options.appMountIds && htmlWebpackPlugin.options.appMountIds.length > 0) { %>
+    <% for (var index in htmlWebpackPlugin.options.appMountIds) { %>
+    <div id="<%= htmlWebpackPlugin.options.appMountIds[index]%>"></div>
+    <% } %>
+    <% } %>
+    
+    <% if (htmlWebpackPlugin.options.window) { %>
+    <script>
+      <% for (var varName in htmlWebpackPlugin.options.window) { %>
+        window['<%=varName%>'] = <%= JSON.stringify(htmlWebpackPlugin.options.window[varName]) %>;
+      <% } %>
+    </script>
+    <% } %>
+    
+    <% for (var chunk in htmlWebpackPlugin.files.chunks) { %>
+    <script src="<%= htmlWebpackPlugin.files.chunks[chunk].entry %>"></script>
+    <% } %>
+    
+    <% if (htmlWebpackPlugin.options.devServer) { %>
+    <script src="<%= htmlWebpackPlugin.options.devServer%>/webpack-dev-server.js"></script>
+    <% } %>
+    
+    <% if (htmlWebpackPlugin.options.googleAnalytics) { %>
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+          (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    
+    
+      <% if (htmlWebpackPlugin.options.googleAnalytics.trackingId) { %>
+        ga('create', '<%= htmlWebpackPlugin.options.googleAnalytics.trackingId%>', 'auto');
+        <% } else { throw new Error("html-webpack-template requires googleAnalytics.trackingId config"); }%>
+    
+      <% if (htmlWebpackPlugin.options.googleAnalytics.pageViewOnLoad) { %>
+        ga('send', 'pageview');
+      <% } %>
+    </script>
+    <% } %>
+
+</body>
+</html>
