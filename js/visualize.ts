@@ -2,29 +2,28 @@
 // Copyright (C) Philip Guo (philip@pgbovine.net)
 // LICENSE: https://github.com/pgbovine/OnlinePythonTutor/blob/master/LICENSE.txt
 
-import { OptFrontendSharedSessions, TogetherJS } from './opt-shared-sessions';
 import { assert, htmlspecialchars } from './pytutor';
 import { OptTestcases, redSadFace, yellowHappyFace } from './opt-testcases';
-
+import { OptFrontend } from './opt-frontend';
 require('./lib/jquery-3.0.0.min.js');
 require('./lib/jquery.qtip.js');
 require('../css/jquery.qtip.css');
 
-const {
-  PYODIDE_VERSION,
-} = require('./common/version.js')
+// const {
+//   PYODIDE_VERSION,
+// } = require('./common/version.js')
 
-const {
-  PYODIDE_VALUE,
-} = require('./common/value.js')
+// const {
+//   PYODIDE_VALUE,
+// } = require('./common/value.js')
 
-let versions = [
-  PYODIDE_VERSION
-];
+// let versions = [
+//   PYODIDE_VERSION
+// ];
 
-let values = [
-  PYODIDE_VALUE
-];
+// let values = [
+//   PYODIDE_VALUE
+// ];
 
 // for TypeScript
 declare var initCodeopticon: any; // FIX later when porting Codeopticon
@@ -76,7 +75,10 @@ SyntaxErrorSurveyBubble.prototype.qTipID = function () {
 
 
 // augment with a "Create test cases" pane
-export class OptFrontendWithTestcases extends OptFrontendSharedSessions {
+export class OptFrontendWithTestcases extends 
+OptFrontend
+
+{
   optTests: OptTestcases;
 
   prevExecutionExceptionObjLst = []; // previous consecutive executions with "compile"-time exceptions
@@ -654,21 +656,21 @@ export class OptFrontendWithTestcases extends OptFrontendSharedSessions {
 
 $(document).ready(function () {
   //populate the version number in the options
-  for (let index = 0; index < versions.length; index++) {
-    let versions_element = versions[index];
-    let values_element = values[index];
-    let selected: string;
+  // for (let index = 0; index < versions.length; index++) {
+  //   let versions_element = versions[index];
+  //   let values_element = values[index];
+  //   let selected: string;
 
-    if (index === 0) {
-      selected = 'selected';
-    } else {
-      selected = '';
-    }
+  //   if (index === 0) {
+  //     selected = 'selected';
+  //   } else {
+  //     selected = '';
+  //   }
 
-    $('#pythonVersionSelector').append(
-      `<option value="${values_element}" ${selected}> ${versions_element}</option>`
-    );
-  }
+  //   $('#pythonVersionSelector').append(
+  //     `<option value="${values_element}" ${selected}> ${versions_element}</option>`
+  //   );
+  // }
 
   var params = {};
   var optOverride = (window as any).optOverride;

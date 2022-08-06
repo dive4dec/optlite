@@ -1,5 +1,6 @@
 const webpack = require('webpack');
 const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 // var WebpackOnBuildPlugin = require('on-build-webpack');
 // var exec = require('child_process').exec;
 
@@ -14,7 +15,18 @@ module.exports = {
         jQuery: "jquery",
         $: "jquery"
       }),
-
+      new HtmlWebpackPlugin({
+        filename: "visualize.html",
+        title: 'Visualize Python Code Execution',
+        chunks: ['visualize'],
+        template: './js/template/visualize.html'
+      }),
+      new HtmlWebpackPlugin({
+        filename: "live.html",
+        title: 'Live Python Programming Mode',
+        chunks: ['opt-live'],
+        template: './js/template/live.html'
+      })
       // run a micro frontend regression test after every webpack build
       // to sanity-check
       //
@@ -85,7 +97,11 @@ module.exports = {
             {
               test: /\.ttf$/,
               type: 'asset/resource'
-            }  // Font
+            },  // Font
+            { 
+              test: /\.hbs$/, 
+              loader: "handlebars-loader" 
+            }
         ]
     },
 
@@ -98,5 +114,5 @@ module.exports = {
       },
       compress: true,
       port: 8000,
-    }
+    },
 };

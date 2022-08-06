@@ -1,11 +1,22 @@
-import { OptLite } from './global'
+import { OptLite, combineDefaults } from './global'
 
-const pyodideWorker = new Worker("worker.js");
-
+const pyodideWorker = new Worker(new URL("./optworker.js", import.meta.url));
 const callbacks = {};
 
+// ask worker to initialize pyodide based on the configuration 
+// in a global OptLite object predefined before loading pyodide.
 const initWorker = (() => {
-  let id = -1;
+  let id = -1; // use -ve job id for initialization
+  combineDefaults( OptLite, {
+    pyodide: "https://cdn.jsdelivr.net/pyodide/v0.20.0/full/pyodide.js", // pyodide url to load
+    optlite: "optlite", // the required optlite package to install using micropip.
+    // Use the latest version on pypi by default but can be changed to point to 
+    // - other versions such as "optlite==0.0.1", or 
+    // - a wheel file such as "dist/optlite-0.0.1-py2.py3-none-any.whl".
+    packages: [], // list of packages to install using micropip, especially those not built-in to pyodide.
+    // It is not required to put pyodide built-in packages (sucn as numpy) as those can be downloaded on-the-fly when visualizing a script that import them.
+    // Nevertheless, putting them in the packages list allows them to be preloaded before visualizing any scripts.
+  });
   return () => {
     return new Promise((onSuccess) => {
       callbacks[id] = onSuccess;
@@ -18,25 +29,36 @@ const initWorker = (() => {
 })();
 let init = initWorker();
 
+// handle results from worker
 pyodideWorker.onmessage = async (event) => {
   const { id, ...data } = event.data;
   const onSuccess = callbacks[id];
-  delete callbacks[id];
-  onSuccess(data); 
+  if (onSuccess) { 
+    // Only handle the first reply from worker for each job
+    delete callbacks[id];
+    onSuccess(data); 
+  }
 };
 
+/**
+ * Combine defaults into a configuration that may already have
+ * user-provided values.  Values in src only go into dst if
+ * there is not already a value for that key.
+ *
+ * @param {string} script      The code to execute and visualize
+ * @param {string} options     The options for executing the script
+ */
 const asyncRun = (() => {
-  let id = 0; // identify a Promise
-  return (script,context) => {
-    // the id could be generated more carefully
+  let id = 0; // identify each visualization by a non-negative id
+  return (script: string, options: any) => {
     id = (id + 1) % Number.MAX_SAFE_INTEGER;
     return new Promise((onSuccess) => {
-      console.log(init)
       init.then(() => {
+        // visualize after initialize
         callbacks[id] = onSuccess;
         pyodideWorker.postMessage({
-          ...context,
-          python: script,
+          ...options,
+          script: script,
           id,
         });  
       })
@@ -45,59 +67,3 @@ const asyncRun = (() => {
 })();
 
 export { asyncRun };
-/*
-export class PyodideRunner{
-    pyodide_py : any;
-    PyodideRunner(){
-        this.pyodide_py = null;
-    }
-    async getPyodide(){
-        if(this.pyodide_py === null) 
-            //this.pyodide_py = await import('../lib/pyodide'); // await import('pyodide/pyodide.js')
-            this.pyodide_py = await import('pyodide/load-pyodide.js');
-        return this.pyodide_py;
-    }
-    public async runCode(callback:any){
-        
-        let pyodide_py = await this.getPyodide();
-        let pyodide = await pyodide_py.loadPyodide();
-        let output = await pyodide.runPythonAsync(script);
-        callback(output);
-    }
-}
-let script : string = `
-import sys, pg_logger, json
-from optparse import OptionParser
-
-request = False
-try:
-	import StringIO # NB: don't use cStringIO since it doesn't support unicode!!!
-except:
-	import io as StringIO # py3
-		   
-def jsonp(request, dictionary):
-    if (request):
-        return "%s(%s)" % (request, dictionary)
-    return dictionary
-
-
-out_s = StringIO.StringIO()
-
-
-def json_finalizer(input_code, output_trace):
-	ret = dict(code=input_code, trace=output_trace)
-	json_output = json.dumps(ret, indent=None)
-	out_s.write(json_output)
-
-
-pg_logger.exec_script_str_local(code,
-							  None,
-							  False,
-							  False,
-							  json_finalizer)
-
-
-
-jsonp(False, out_s.getvalue())	  
-`;
-*/

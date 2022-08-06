@@ -55,15 +55,16 @@ import * as d3 from 'd3';
 // just punt and use global script dependencies
 require("script-loader!./lib/ace/src-min-noconflict/ace.js");
 require('script-loader!./lib/ace/src-min-noconflict/mode-python.js');
-require('script-loader!./lib/ace/src-min-noconflict/mode-javascript.js');
-require('script-loader!./lib/ace/src-min-noconflict/mode-typescript.js');
-require('script-loader!./lib/ace/src-min-noconflict/mode-c_cpp.js');
-require('script-loader!./lib/ace/src-min-noconflict/mode-java.js');
-require('script-loader!./lib/ace/src-min-noconflict/mode-ruby.js');
+// require('script-loader!./lib/ace/src-min-noconflict/mode-javascript.js');
+// require('script-loader!./lib/ace/src-min-noconflict/mode-typescript.js');
+// require('script-loader!./lib/ace/src-min-noconflict/mode-c_cpp.js');
+// require('script-loader!./lib/ace/src-min-noconflict/mode-java.js');
+// require('script-loader!./lib/ace/src-min-noconflict/mode-ruby.js');
 
 // const {
 //   PYODIDE_VERSION,
 // } = require('./common/version.js')
+
 
 var optLiveFrontend: OptLiveFrontend;
 
@@ -78,19 +79,19 @@ export class OptLiveFrontend extends OptFrontend {
   allMarkerIds: number[] = [];
 
   // override
-  langSettingToBackendScript = {
-    '2': 'LIVE_exec_py2.py',
-    '3': 'LIVE_exec_py3.py',
-    // empty dummy scripts just to do logging on Apache server
-    'js': 'LIVE_exec_js.py',
-    'ts': 'LIVE_exec_ts.py',
-    'java': 'LIVE_exec_java.py',
-    'ruby': 'LIVE_exec_ruby.py',
-    'c': 'LIVE_exec_c.py',
-    'cpp': 'LIVE_exec_cpp.py',
-    'py3anaconda': 'LIVE_exec_py3anaconda.py',
-    'pyodide': 'LIVE_exec_pyodide.py',
-  };
+  // langSettingToBackendScript = {
+  //   '2': 'LIVE_exec_py2.py',
+  //   '3': 'LIVE_exec_py3.py',
+  //   // empty dummy scripts just to do logging on Apache server
+  //   'js': 'LIVE_exec_js.py',
+  //   'ts': 'LIVE_exec_ts.py',
+  //   'java': 'LIVE_exec_java.py',
+  //   'ruby': 'LIVE_exec_ruby.py',
+  //   'c': 'LIVE_exec_c.py',
+  //   'cpp': 'LIVE_exec_cpp.py',
+  //   'py3anaconda': 'LIVE_exec_py3anaconda.py',
+  //   'pyodide': 'LIVE_exec_pyodide.py',
+  // };
 
   constructor(params) {
     super(params);
@@ -109,11 +110,11 @@ export class OptLiveFrontend extends OptFrontend {
       .attr('points', SVG_ARROW_POLYGON)
       .attr('fill', darkArrowColor);
 
-    $('#cumulativeModeSelector,#heapPrimitivesSelector,#textualMemoryLabelsSelector,#pythonVersionSelector').change(() => {
-      this.setAceMode();
-      // force a re-execute on a toggle switch
-      this.executeCodeFromScratch();
-    });
+    // $('#cumulativeModeSelector,#heapPrimitivesSelector,#textualMemoryLabelsSelector,#pythonVersionSelector').change(() => {
+    //   this.setAceMode();
+    //   // force a re-execute on a toggle switch
+    //   this.executeCodeFromScratch();
+    // });
 
     this.setAceMode(); // set syntax highlighting at the end
     $("#pyOutputPane").show();
@@ -146,7 +147,8 @@ export class OptLiveFrontend extends OptFrontend {
 
   // override verison in opt-frontend.ts
   setAceMode() {
-    var v = $('#pythonVersionSelector').val();
+    var v = 
+    $('#pythonVersionSelector').val();
     if (v !== 'js' && v !== '2' && v !== '3' && v !== 'pyodide') {
       // we don't support live mode for this value of v, so set it to
       // python 2 by default
@@ -475,11 +477,12 @@ export class OptLiveFrontend extends OptFrontend {
     this.pyInputAceEditor.setDisplayIndentGuides(false); // to avoid annoying gray vertical lines
 
     this.pyInputAceEditor.$blockScrolling = Infinity; // kludgy to shut up weird warnings
+    this.pyInputAceEditor.setOptions({minLines: 10, maxLines: 1000});
 
     $("#pyInputPane,#codeInputPane")
       .css('width', '550px')
-      .css('min-width', '250px')
-      .css('max-width', '700px'); // don't let it get too ridiculously wide
+      .css('min-width', '250px');
+      // .css('max-width', '700px'); // don't let it get too ridiculously wide
     $('#codeInputPane').css('height', height + 'px'); // VERY IMPORTANT so that it works on I.E., ugh!
 
     // make it resizable!
@@ -585,26 +588,27 @@ export class OptLiveFrontend extends OptFrontend {
 
     this.setFronendError(['Running your code ...'], true);
 
-    var backendScript = this.hostConfig.getLangSettingToBackendScript()[pyState];
-    assert(backendScript);
-    var jsonp_endpoint = null;
+    // var backendScript = this.hostConfig.getLangSettingToBackendScript()[pyState];
+    // assert(backendScript);
+    // var jsonp_endpoint = null;
 
-    if (pyState === '2') {
-      frontendOptionsObj.lang = 'py2';
-    } else if (pyState === '3') {
-      frontendOptionsObj.lang = 'py3';
-    } else if (pyState === 'pyodide') {
+    // if (pyState === '2') {
+    //   frontendOptionsObj.lang = 'py2';
+    // } else if (pyState === '3') {
+    //   frontendOptionsObj.lang = 'py3';
+    // } else 
+    // if (pyState === 'pyodide') {
       frontendOptionsObj.lang = 'pyodide';
-    } else if (pyState === 'js') {
-      frontendOptionsObj.lang = 'js';
+    // } else if (pyState === 'js') {
+      // frontendOptionsObj.lang = 'js';
 
-      // only set the remote endpoint if you're *not* on localhost:
-      if (window.location.href.indexOf('localhost') < 0) {
-        jsonp_endpoint = this.hostConfig.getLangSettingToJsonpEndpoint()[pyState]; // maybe null
-      }
-    } else {
-      assert(false);
-    }
+      // // only set the remote endpoint if you're *not* on localhost:
+      // if (window.location.href.indexOf('localhost') < 0) {
+      //   jsonp_endpoint = this.hostConfig.getLangSettingToJsonpEndpoint()[pyState]; // maybe null
+    //   // }
+    // } else {
+    //   assert(false);
+    // }
 
     // submit update history of the "previous" visualizer whenever you
     // run the code and hopefully get a new visualizer back
@@ -620,68 +624,63 @@ export class OptLiveFrontend extends OptFrontend {
     }
     if (pyState === 'pyodide') {
       let call = async () => {
-
-
-        let result: any = await asyncRun(
-`import optlite
-from js import code
-optlite.exec_script(code)`, { code:  codeToExec });
+        let result: any = await asyncRun(codeToExec, {});
         execCallback(JSON.parse(result.results))
       }
-       call();
+      call();
     }
-    else if (pyState === '2' || pyState === '3') {
-      jsonp_endpoint = this.hostConfig.getLangSettingToJsonpEndpoint()[pyState];
-      let args = {
-        user_script: codeToExec,
-        raw_input_json: this.rawInputLst.length > 0 ? JSON.stringify(this.rawInputLst) : '',
-        options_json: JSON.stringify(backendOptionsObj),
-        user_uuid: this.userUUID,
-        session_uuid: this.sessionUUID,
-        prevUpdateHistoryJSON: prevUpdateHistoryJSON,
-        exeTime: new Date().getTime()
-      };
-      if (!this.hostConfig.isK8s) {
-        $.ajax({
-          url: jsonp_endpoint,
-          // The name of the callback parameter, as specified by the YQL service
-          jsonp: "callback",
-          dataType: "jsonp",
-          data: args,
-          success: execCallback,
-        });
-      } else {
-        $.ajax({
-          url: jsonp_endpoint,
-          dataType: "json",
-          data: args,
-          success: execCallback,
-        });
-      }
-    }
-    else if (pyState === 'js') {
-      if (window.location.href.indexOf('localhost') >= 0) {
-        // use /exec_js_native if you're running on localhost:
-        // (need to first run 'make local' from ../../v4-cokapi/Makefile)
-        $.get('http://localhost:3000/exec_js_native',
-          {
-            user_script: codeToExec,
-            raw_input_json: this.rawInputLst.length > 0 ? JSON.stringify(this.rawInputLst) : '',
-            options_json: JSON.stringify(backendOptionsObj),
-            user_uuid: this.userUUID,
-            session_uuid: this.sessionUUID,
-            prevUpdateHistoryJSON: prevUpdateHistoryJSON,
-            exeTime: new Date().getTime()
-          },
-          execCallback, "json");
-      } else {
-        assert(false);
-      }
-    } else {
-      console.log('not pyo and js');
-      assert(false);
+    //else if (pyState === '2' || pyState === '3') {
+      // jsonp_endpoint = this.hostConfig.getLangSettingToJsonpEndpoint()[pyState];
+    //   let args = {
+    //     user_script: codeToExec,
+    //     raw_input_json: this.rawInputLst.length > 0 ? JSON.stringify(this.rawInputLst) : '',
+    //     options_json: JSON.stringify(backendOptionsObj),
+    //     user_uuid: this.userUUID,
+    //     session_uuid: this.sessionUUID,
+    //     prevUpdateHistoryJSON: prevUpdateHistoryJSON,
+    //     exeTime: new Date().getTime()
+    //   };
+    //   if (!this.hostConfig.isK8s) {
+    //     $.ajax({
+    //       url: jsonp_endpoint,
+    //       // The name of the callback parameter, as specified by the YQL service
+    //       jsonp: "callback",
+    //       dataType: "jsonp",
+    //       data: args,
+    //       success: execCallback,
+    //     });
+    //   } else {
+    //     $.ajax({
+    //       url: jsonp_endpoint,
+    //       dataType: "json",
+    //       data: args,
+    //       success: execCallback,
+    //     });
+    //   }
+    // }
+    // else if (pyState === 'js') {
+    //   if (window.location.href.indexOf('localhost') >= 0) {
+    //     // use /exec_js_native if you're running on localhost:
+    //     // (need to first run 'make local' from ../../v4-cokapi/Makefile)
+    //     $.get('http://localhost:3000/exec_js_native',
+    //       {
+    //         user_script: codeToExec,
+    //         raw_input_json: this.rawInputLst.length > 0 ? JSON.stringify(this.rawInputLst) : '',
+    //         options_json: JSON.stringify(backendOptionsObj),
+    //         user_uuid: this.userUUID,
+    //         session_uuid: this.sessionUUID,
+    //         prevUpdateHistoryJSON: prevUpdateHistoryJSON,
+    //         exeTime: new Date().getTime()
+    //       },
+    //       execCallback, "json");
+    //   } else {
+    //     assert(false);
+    //   }
+    // } else {
+    //   console.log('not pyo and js');
+    //   assert(false);
 
-    }
+    // }
 
   }
 

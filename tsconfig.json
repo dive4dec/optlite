@@ -7,10 +7,16 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "lib":["ES2018","DOM"],
+    "module":"ES2020",
     "downlevelIteration": true
   },
   "exclude": [
     "node_modules",
-    "example-code"
+    "build",
+    "js/**/__tests__"
+  ],
+  "include": [
+    "js/**/*.ts",
+    "js/**/*.tsx",
   ]
 }

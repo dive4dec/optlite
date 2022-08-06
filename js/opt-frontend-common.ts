@@ -19,7 +19,7 @@ require('./lib/jquery.ba-dotimeout.min.js');
 // need to directly import the class for type checking to work
 import { ExecutionVisualizer, assert, htmlspecialchars } from './pytutor';
 import { nullTraceErrorLst, unsupportedFeaturesStr } from './footer-html';
-import { HostConfig } from './config/HostConfig'
+// import { HostConfig } from './config/HostConfig'
 import { asyncRun } from './pyodide/runner';
 
 
@@ -57,14 +57,14 @@ export abstract class AbstractBaseFrontend {
 
   num414Tries = 0;
 
-  hostConfig: HostConfig;
+  // hostConfig: HostConfig;
 
   abstract executeCode(forceStartingInstr?: number, forceRawInputLst?: string[]): any;
   abstract finishSuccessfulExecution(): any; // called by executeCodeAndCreateViz
   abstract handleUncaughtException(trace: any[]): any; // called by executeCodeAndCreateViz
 
   constructor(params: any = {}) {
-    this.hostConfig = new HostConfig();
+    // this.hostConfig = new HostConfig();
     if (supports_html5_storage()) {
       // generate a unique UUID per "user" (as indicated by a single browser
       // instance on a user's machine, which can be more precise than IP
@@ -133,21 +133,21 @@ export abstract class AbstractBaseFrontend {
       .attr('disabled', false)
       .click(this.executeCodeFromScratch.bind(this));
   }
-  sendLogRequest(url: string, args: any) {
-    url = this.hostConfig.pythonRoot + url;
-    if (!this.hostConfig.isK8s && !this.hostConfig.isDevServer) {
-      // support for calling cross site backend in local environment
-      $.ajax({
-        url: url,
-        jsonp: "callback",
-        dataType: "jsonp",
-        data: args,
-        success: (data) => { }
-      })
-    } else {
-      $.get(url, args, function (dat) { });
-    }
-  }
+  // sendLogRequest(url: string, args: any) {
+  //   url = this.hostConfig.pythonRoot + url;
+  //   if (!this.hostConfig.isK8s && !this.hostConfig.isDevServer) {
+  //     // support for calling cross site backend in local environment
+  //     $.ajax({
+  //       url: url,
+  //       jsonp: "callback",
+  //       dataType: "jsonp",
+  //       data: args,
+  //       success: (data) => { }
+  //     })
+  //   } else {
+  //     $.get(url, args, function (dat) { });
+  //   }
+  // }
   ignoreAjaxError(settings) { return false; } // subclasses should override
 
   // empty stub so that our code doesn't crash.
@@ -219,8 +219,8 @@ export abstract class AbstractBaseFrontend {
 
   getBaseBackendOptionsObj() {
     var ret = {
-      cumulative_mode: ($('#cumulativeModeSelector').val() == 'true'),
-      heap_primitives: ($('#heapPrimitivesSelector').val() == 'true'),
+      // cumulative_mode: ($('#cumulativeModeSelector').val() == 'true'),
+      // heap_primitives: ($('#heapPrimitivesSelector').val() == 'true'),
       show_only_outputs: false, // necessary for legacy reasons, ergh!
       origin: this.originFrontendJsFile
     };
@@ -229,9 +229,9 @@ export abstract class AbstractBaseFrontend {
 
   getBaseFrontendOptionsObj() {
     var ret = {// tricky: selector 'true' and 'false' values are strings!
-      disableHeapNesting: (($('#heapPrimitivesSelector').val() == 'true') ||
-        ($('#heapPrimitivesSelector').val() == 'nevernest')),
-      textualMemoryLabels: ($('#textualMemoryLabelsSelector').val() == 'true'),
+      // disableHeapNesting: (($('#heapPrimitivesSelector').val() == 'true') ||
+      //   ($('#heapPrimitivesSelector').val() == 'nevernest')),
+      // textualMemoryLabels: ($('#textualMemoryLabelsSelector').val() == 'true'),
       executeCodeWithRawInputFunc: this.executeCodeWithRawInput.bind(this),
 
       // always use the same visualizer ID for all
@@ -337,31 +337,31 @@ export abstract class AbstractBaseFrontend {
       this.num414Tries = 0;
     };
 
-    var backendScript = this.hostConfig.getLangSettingToBackendScript()[pyState];
-    assert(backendScript);
-    var jsonp_endpoint = this.hostConfig.getLangSettingToJsonpEndpoint()[pyState]; // maybe null
-    var api_endpoint = this.hostConfig.getLangSettingToJsonpEndpoint()[pyState]; // need to make a new array to sort
-    if (!backendScript) {
-      this.setFronendError(["Server configuration error: No backend script"]);
-      return;
-    }
+    // var backendScript = this.hostConfig.getLangSettingToBackendScript()[pyState];
+    // assert(backendScript);
+    // var jsonp_endpoint = this.hostConfig.getLangSettingToJsonpEndpoint()[pyState]; // maybe null
+    // var api_endpoint = this.hostConfig.getLangSettingToJsonpEndpoint()[pyState]; // need to make a new array to sort
+    // if (!backendScript) {
+    //   this.setFronendError(["Server configuration error: No backend script"]);
+    //   return;
+    // }
 
     this.clearFrontendError();
     this.startExecutingCode(frontendOptionsObj.startingInstruction);
-    frontendOptionsObj.lang = pyState;
+    //frontendOptionsObj.lang = pyState;
     // kludgy exceptions
-    if (pyState === '2') {
-      frontendOptionsObj.lang = 'py2';
-    } else if (pyState === '3') {
-      frontendOptionsObj.lang = 'py3';
-    }  
-      else if (pyState === 'pyodide') {
+    // if (pyState === '2') {
+    //   frontendOptionsObj.lang = 'py2';
+    // } else if (pyState === '3') {
+    //   frontendOptionsObj.lang = 'py3';
+    // }  
+    //   else if (pyState === 'pyodide') {
       frontendOptionsObj.lang = 'pyodide';
-    } 
-    else if (pyState === 'java') {
-      // TODO: should we still keep this exceptional case?
-      frontendOptionsObj.disableHeapNesting = true; // never nest Java objects, seems like a good default
-    }
+   // } 
+    // else if (pyState === 'java') {
+    //   // TODO: should we still keep this exceptional case?
+    //   frontendOptionsObj.disableHeapNesting = true; // never nest Java objects, seems like a good default
+    // }
 
     // if we don't have any deltas, then don't bother sending deltaObj:
     // NB: not all subclasses will initialize this.deltaObj
@@ -395,191 +395,186 @@ export abstract class AbstractBaseFrontend {
     }
 
     // everything below here is an ajax (async) call to the server ...
-    if (frontendOptionsObj.lang === 'pyodide') {
+    //if (frontendOptionsObj.lang === 'pyodide') {
       //this.pyodideRunner.runCode(callbackWrapper);
       let call = async () => {
-
-        let result: any = await asyncRun(
-`import optlite
-from js import code
-optlite.exec_script(code)`, { code:  codeToExec });
- 
-        callbackWrapper(JSON.parse(result.results))
+        let result: any = await asyncRun(codeToExec, {});
+        callbackWrapper(JSON.parse(result.results));
       }
       call();
-    } 
-    else if (!this.hostConfig.isK8s) {
-      //assert (pyState !== '2' && pyState !== '3');
-      /* 
-        /* 
-      /* 
-      // 2018-08-19: this is an uncommon use case (only used for https iframe embedding)
-      if (jsonp_endpoint.indexOf('https:') == 0) {
-          this.setFronendError(["Error: https execution of non-Python code is not currently supported. [#nonPythonHttps]"]);
-          this.doneExecutingCode();
-          return;
-      }
-      */
-      var retryOnBackupServer = () => {
-        // first log a #TryBackup error entry:
-        this.setFronendError(["Main server is busy or has errors; re-trying using backup server " + this.hostConfig.backupHttpServerRoot + " ... [#TryBackup]"]);
+   // } 
+    // else if (!this.hostConfig.isK8s) {
+    //   //assert (pyState !== '2' && pyState !== '3');
+    //   /* 
+    //     /* 
+    //   /* 
+    //   // 2018-08-19: this is an uncommon use case (only used for https iframe embedding)
+    //   if (jsonp_endpoint.indexOf('https:') == 0) {
+    //       this.setFronendError(["Error: https execution of non-Python code is not currently supported. [#nonPythonHttps]"]);
+    //       this.doneExecutingCode();
+    //       return;
+    //   }
+    //   */
+    //   var retryOnBackupServer = () => {
+    //     // first log a #TryBackup error entry:
+    //     this.setFronendError(["Main server is busy or has errors; re-trying using backup server " + this.hostConfig.backupHttpServerRoot + " ... [#TryBackup]"]);
 
-        // now re-try the query using the backup server:
-        var backup_jsonp_endpoint = this.hostConfig.getLangSettingToJsonpEndpointBackup()[pyState];
-        assert(backup_jsonp_endpoint);
-        $.ajax({
-          url: backup_jsonp_endpoint,
-          // The name of the callback parameter, as specified by the YQL service
-          jsonp: "callback",
-          dataType: "jsonp",
-          data: {
-            user_script: codeToExec,
-            options_json: JSON.stringify(backendOptionsObj),
-            raw_input_json: this.rawInputLst.length > 0 ? JSON.stringify(this.rawInputLst) : null,
-          },
-          success: callbackWrapper
-        });
-      }
+    //     // now re-try the query using the backup server:
+    //     var backup_jsonp_endpoint = this.hostConfig.getLangSettingToJsonpEndpointBackup()[pyState];
+    //     assert(backup_jsonp_endpoint);
+    //     $.ajax({
+    //       url: backup_jsonp_endpoint,
+    //       // The name of the callback parameter, as specified by the YQL service
+    //       jsonp: "callback",
+    //       dataType: "jsonp",
+    //       data: {
+    //         user_script: codeToExec,
+    //         options_json: JSON.stringify(backendOptionsObj),
+    //         raw_input_json: this.rawInputLst.length > 0 ? JSON.stringify(this.rawInputLst) : null,
+    //       },
+    //       success: callbackWrapper
+    //     });
+    //   }
 
-      // for non-python, this should be a dummy script for logging
-      // only, and to check whether there's a 414 error for #CodeTooLong
-      $.ajax({
-        url: jsonp_endpoint,
-        // The name of the callback parameter, as specified by the YQL service
-        jsonp: "callback",
-        dataType: "jsonp",
-        data: {
-          user_script: codeToExec,
-          options_json: JSON.stringify(backendOptionsObj),
-          raw_input_json: this.rawInputLst.length > 0 ? JSON.stringify(this.rawInputLst) : null,
-        },
-        success: (dataFromBackend) => {
-          var trace = dataFromBackend.trace;
-          var shouldRetry = false;
+    //   // for non-python, this should be a dummy script for logging
+    //   // only, and to check whether there's a 414 error for #CodeTooLong
+    //   $.ajax({
+    //     url: jsonp_endpoint,
+    //     // The name of the callback parameter, as specified by the YQL service
+    //     jsonp: "callback",
+    //     dataType: "jsonp",
+    //     data: {
+    //       user_script: codeToExec,
+    //       options_json: JSON.stringify(backendOptionsObj),
+    //       raw_input_json: this.rawInputLst.length > 0 ? JSON.stringify(this.rawInputLst) : null,
+    //     },
+    //     success: (dataFromBackend) => {
+    //       var trace = dataFromBackend.trace;
+    //       var shouldRetry = false;
 
-          // the cokapi backend responded successfully, but the
-          // backend may have issued an error. if so, then
-          // RETRY with backupHttpServerRoot. otherwise let it
-          // through to callbackWrapper
-          if (!trace ||
-            (trace.length == 0) ||
-            (trace[trace.length - 1].event == 'uncaught_exception')) {
-            if (trace.length == 1) {
-              // we should only retry if there's a legit
-              // backend error and not just a syntax error:
-              var msg = trace[0].exception_msg;
-              if (msg.indexOf('#BackendError') >= 0) {
-                shouldRetry = true;
-              }
-            } else {
-              shouldRetry = true;
-            }
-          }
+    //       // the cokapi backend responded successfully, but the
+    //       // backend may have issued an error. if so, then
+    //       // RETRY with backupHttpServerRoot. otherwise let it
+    //       // through to callbackWrapper
+    //       if (!trace ||
+    //         (trace.length == 0) ||
+    //         (trace[trace.length - 1].event == 'uncaught_exception')) {
+    //         if (trace.length == 1) {
+    //           // we should only retry if there's a legit
+    //           // backend error and not just a syntax error:
+    //           var msg = trace[0].exception_msg;
+    //           if (msg.indexOf('#BackendError') >= 0) {
+    //             shouldRetry = true;
+    //           }
+    //         } else {
+    //           shouldRetry = true;
+    //         }
+    //       }
 
-          // don't bother re-trying for https since we don't
-          // currently have an https backup server
-          if (window.location.protocol === 'https:') {
-            shouldRetry = false;
-          }
+    //       // don't bother re-trying for https since we don't
+    //       // currently have an https backup server
+    //       if (window.location.protocol === 'https:') {
+    //         shouldRetry = false;
+    //       }
 
-          if (shouldRetry) {
-            retryOnBackupServer();
-          } else {
-            // accept our fate without retrying
-            callbackWrapper(dataFromBackend);
-          }
-        },
-        // if there's a server error, then ALWAYS retry:
-        error: (jqXHR, textStatus, errorThrown) => {
-          retryOnBackupServer();
-          // use 'global: false;' below to NOT run the generic ajaxError() function
-        },
+    //       if (shouldRetry) {
+    //         retryOnBackupServer();
+    //       } else {
+    //         // accept our fate without retrying
+    //         callbackWrapper(dataFromBackend);
+    //       }
+    //     },
+    //     // if there's a server error, then ALWAYS retry:
+    //     error: (jqXHR, textStatus, errorThrown) => {
+    //       retryOnBackupServer();
+    //       // use 'global: false;' below to NOT run the generic ajaxError() function
+    //     },
 
-        global: false, // VERY IMPORTANT! do not call the generic ajaxError() function when there's an error;
-        // only call our error handler above; http://api.jquery.com/ajaxerror/
-      });
+    //     global: false, // VERY IMPORTANT! do not call the generic ajaxError() function when there's an error;
+    //     // only call our error handler above; http://api.jquery.com/ajaxerror/
+    //   });
 
-    } else if (api_endpoint) { // same origin in production
+    // } else if (api_endpoint) { // same origin in production
    
-      var retryOnBackupServer = () => {
-        // first log a #TryBackup error entry:
-        this.setFronendError(["Main server is busy or has errors; re-trying using backup server " + this.hostConfig.backupHttpServerRoot + " ... [#TryBackup]"]);
+    //   var retryOnBackupServer = () => {
+    //     // first log a #TryBackup error entry:
+    //     this.setFronendError(["Main server is busy or has errors; re-trying using backup server " + this.hostConfig.backupHttpServerRoot + " ... [#TryBackup]"]);
 
-        // now re-try the query using the backup server:
-        var backup_jsonp_endpoint = this.hostConfig.getLangSettingToJsonpEndpointBackup()[pyState];
-        assert(backup_jsonp_endpoint);
-        $.ajax({
-          url: backup_jsonp_endpoint,
-          // The name of the callback parameter, as specified by the YQL service
-          dataType: "json",
-          data: {
-            user_script: codeToExec,
-            options_json: JSON.stringify(backendOptionsObj),
-            raw_input_json: this.rawInputLst.length > 0 ? JSON.stringify(this.rawInputLst) : null,
-          },
-          success: callbackWrapper
-        });
-      }
+    //     // now re-try the query using the backup server:
+    //     var backup_jsonp_endpoint = this.hostConfig.getLangSettingToJsonpEndpointBackup()[pyState];
+    //     assert(backup_jsonp_endpoint);
+    //     $.ajax({
+    //       url: backup_jsonp_endpoint,
+    //       // The name of the callback parameter, as specified by the YQL service
+    //       dataType: "json",
+    //       data: {
+    //         user_script: codeToExec,
+    //         options_json: JSON.stringify(backendOptionsObj),
+    //         raw_input_json: this.rawInputLst.length > 0 ? JSON.stringify(this.rawInputLst) : null,
+    //       },
+    //       success: callbackWrapper
+    //     });
+    //   }
 
-      // for non-python, this should be a dummy script for logging
-      // only, and to check whether there's a 414 error for #CodeTooLong
-      $.ajax({
-        url: jsonp_endpoint,
-        // The name of the callback parameter, as specified by the YQL service
-        dataType: "json",
-        data: {
-          user_script: codeToExec,
-          options_json: JSON.stringify(backendOptionsObj),
-          raw_input_json: this.rawInputLst.length > 0 ? JSON.stringify(this.rawInputLst) : null,
-        },
-        success: (dataFromBackend) => {
-          var trace = dataFromBackend.trace;
-          var shouldRetry = false;
+    //   // for non-python, this should be a dummy script for logging
+    //   // only, and to check whether there's a 414 error for #CodeTooLong
+    //   $.ajax({
+    //     url: jsonp_endpoint,
+    //     // The name of the callback parameter, as specified by the YQL service
+    //     dataType: "json",
+    //     data: {
+    //       user_script: codeToExec,
+    //       options_json: JSON.stringify(backendOptionsObj),
+    //       raw_input_json: this.rawInputLst.length > 0 ? JSON.stringify(this.rawInputLst) : null,
+    //     },
+    //     success: (dataFromBackend) => {
+    //       var trace = dataFromBackend.trace;
+    //       var shouldRetry = false;
 
-          // the cokapi backend responded successfully, but the
-          // backend may have issued an error. if so, then
-          // RETRY with backupHttpServerRoot. otherwise let it
-          // through to callbackWrapper
-          if (!trace ||
-            (trace.length == 0) ||
-            (trace[trace.length - 1].event == 'uncaught_exception')) {
-            if (trace.length == 1) {
-              // we should only retry if there's a legit
-              // backend error and not just a syntax error:
-              var msg = trace[0].exception_msg;
-              if (msg.indexOf('#BackendError') >= 0) {
-                shouldRetry = true;
-              }
-            } else {
-              shouldRetry = true;
-            }
-          }
+    //       // the cokapi backend responded successfully, but the
+    //       // backend may have issued an error. if so, then
+    //       // RETRY with backupHttpServerRoot. otherwise let it
+    //       // through to callbackWrapper
+    //       if (!trace ||
+    //         (trace.length == 0) ||
+    //         (trace[trace.length - 1].event == 'uncaught_exception')) {
+    //         if (trace.length == 1) {
+    //           // we should only retry if there's a legit
+    //           // backend error and not just a syntax error:
+    //           var msg = trace[0].exception_msg;
+    //           if (msg.indexOf('#BackendError') >= 0) {
+    //             shouldRetry = true;
+    //           }
+    //         } else {
+    //           shouldRetry = true;
+    //         }
+    //       }
 
-          // don't bother re-trying for https since we don't
-          // currently have an https backup server
-          if (window.location.protocol === 'https:') {
-            shouldRetry = false;
-          }
+    //       // don't bother re-trying for https since we don't
+    //       // currently have an https backup server
+    //       if (window.location.protocol === 'https:') {
+    //         shouldRetry = false;
+    //       }
 
-          if (shouldRetry) {
-            retryOnBackupServer();
-          } else {
-            // accept our fate without retrying
-            callbackWrapper(dataFromBackend);
-          }
-        },
-        // if there's a server error, then ALWAYS retry:
-        error: (jqXHR, textStatus, errorThrown) => {
-          retryOnBackupServer();
-          // use 'global: false;' below to NOT run the generic ajaxError() function
-        },
+    //       if (shouldRetry) {
+    //         retryOnBackupServer();
+    //       } else {
+    //         // accept our fate without retrying
+    //         callbackWrapper(dataFromBackend);
+    //       }
+    //     },
+    //     // if there's a server error, then ALWAYS retry:
+    //     error: (jqXHR, textStatus, errorThrown) => {
+    //       retryOnBackupServer();
+    //       // use 'global: false;' below to NOT run the generic ajaxError() function
+    //     },
 
-        global: false, // VERY IMPORTANT! do not call the generic ajaxError() function when there's an error;
-        // only call our error handler above; http://api.jquery.com/ajaxerror/
-      });
-    } else {
-      this.setFronendError(["Wrong endpoint"]);
-    }
+    //     global: false, // VERY IMPORTANT! do not call the generic ajaxError() function when there's an error;
+    //     // only call our error handler above; http://api.jquery.com/ajaxerror/
+    //   });
+    // } else {
+    //   this.setFronendError(["Wrong endpoint"]);
+    // }
   }
 
 
