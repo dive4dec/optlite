@@ -79,6 +79,12 @@ module.exports = {
         sourceMapFilename: "[file].map",
     },
 
+    optimization: {
+      splitChunks: {
+        chunks: 'all',
+      },
+    },
+
     module: {
         rules: [
             { 
