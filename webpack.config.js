@@ -16,7 +16,7 @@ module.exports = {
         $: "jquery"
       }),
       new HtmlWebpackPlugin({
-        filename: "visualize.html",
+        filename: "index.html",
         title: 'Visualize Python Code Execution',
         chunks: ['visualize'],
         template: './js/template/visualize.html'
