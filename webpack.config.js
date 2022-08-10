@@ -67,7 +67,7 @@ module.exports = {
 
     entry: {
         'visualize': "./js/visualize.ts",
-        'opt-live': "./js/opt-live.ts",
+        'opt-live': "./js/opt-live.ts"
     },
 
     output: {
@@ -79,11 +79,11 @@ module.exports = {
         sourceMapFilename: "[file].map",
     },
 
-    optimization: {
-      splitChunks: {
-        chunks: 'all',
-      },
-    },
+    // optimization: {
+    //   splitChunks: {
+    //     chunks: 'all',
+    //   },
+    // },
 
     module: {
         rules: [
