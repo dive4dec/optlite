@@ -1,9 +1,10 @@
 {
   "name": "optlite",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Serverless OPT",
-  "main": "bundle.js",
-  "repository": "https://github.com/pgbovine/OnlinePythonTutor",
+  "main": "build/visualize.bundle.js",
+  "repository": "https://github.com/dive4dec/optlite",
+  "author": "dive4dec",
   "license": "BSD-3-Clause",
   "scripts": {
     "build": "webpack --mode=development --devtool source-map --progress",
