@@ -3,7 +3,7 @@ from . import pg_logger
 from ._version import __version__
 
 
-def exec_script(code):
+def exec_script(code, rawInputLst):
     def jsonp(request, dictionary):
         if (request):
             return "%s(%s)" % (request, dictionary)
@@ -16,7 +16,7 @@ def exec_script(code):
 
     out_s = io.StringIO()
     pg_logger.exec_script_str_local(code,
-                                    None,
+                                    rawInputLst,
                                     False,
                                     False,
                                     json_finalizer,
