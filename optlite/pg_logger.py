@@ -1647,7 +1647,7 @@ class PGLogger(bdb.Bdb):
 import json
 
 # the MAIN meaty function!!!
-def exec_script_str(script_str, raw_input_lst_json, options_json, finalizer_func):
+def exec_script_str(script_str, raw_input_lst, options_json, finalizer_func):
   if options_json:
     options = json.loads(options_json)
   else:
@@ -1663,9 +1663,9 @@ def exec_script_str(script_str, raw_input_lst_json, options_json, finalizer_func
   # TODO: refactor these NOT to be globals
   global input_string_queue
   input_string_queue = []
-  if raw_input_lst_json:
+  if raw_input_lst:
     # TODO: if we want to support unicode, remove str() cast
-    input_string_queue = [str(e) for e in json.loads(raw_input_lst_json)]
+    input_string_queue = [str(e) for e in iter(raw_input_lst)]
 
   try:
     logger._runscript(script_str)
@@ -1681,7 +1681,7 @@ def exec_script_str(script_str, raw_input_lst_json, options_json, finalizer_func
 #
 # [optional] probe_exprs is a list of strings representing
 # expressions whose values to probe at each step (advanced)
-def exec_script_str_local(script_str, raw_input_lst_json, cumulative_mode, heap_primitives, finalizer_func,
+def exec_script_str_local(script_str, raw_input_lst, cumulative_mode, heap_primitives, finalizer_func,
                           probe_exprs=None, allow_all_modules=False):
   logger = PGLogger(cumulative_mode, heap_primitives, False, finalizer_func,
                     disable_security_checks=True,
@@ -1691,9 +1691,9 @@ def exec_script_str_local(script_str, raw_input_lst_json, cumulative_mode, heap_
   # TODO: refactor these NOT to be globals
   global input_string_queue
   input_string_queue = []
-  if raw_input_lst_json:
+  if raw_input_lst:
     # TODO: if we want to support unicode, remove str() cast
-    input_string_queue = [str(e) for e in json.loads(raw_input_lst_json)]
+    input_string_queue = [str(e) for e in iter(raw_input_lst)]
 
   try:
     logger._runscript(script_str)

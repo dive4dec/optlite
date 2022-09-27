@@ -1,6 +1,6 @@
 {
   "name": "optlite",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Serverless OPT",
   "main": "build/visualize.bundle.js",
   "repository": "https://github.com/dive4dec/optlite",

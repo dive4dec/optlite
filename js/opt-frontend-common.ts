@@ -398,7 +398,7 @@ export abstract class AbstractBaseFrontend {
     //if (frontendOptionsObj.lang === 'pyodide') {
       //this.pyodideRunner.runCode(callbackWrapper);
       let call = async () => {
-        let result: any = await asyncRun(codeToExec, {});
+        let result: any = await asyncRun(codeToExec, this.rawInputLst, {});
         callbackWrapper(JSON.parse(result.results));
       }
       call();

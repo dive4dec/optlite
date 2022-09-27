@@ -50,7 +50,7 @@ pyodideWorker.onmessage = async (event) => {
  */
 const asyncRun = (() => {
   let id = 0; // identify each visualization by a non-negative id
-  return (script: string, options: any) => {
+  return (script: string, rawInputLst: string[], options: any) => {
     id = (id + 1) % Number.MAX_SAFE_INTEGER;
     return new Promise((onSuccess) => {
       init.then(() => {
@@ -59,6 +59,7 @@ const asyncRun = (() => {
         pyodideWorker.postMessage({
           ...options,
           script: script,
+          rawInputLst: rawInputLst,
           id,
         });  
       })
