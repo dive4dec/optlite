@@ -18,7 +18,10 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.10' 
+          python-version: '3.10'
+          cache: 'pip' # caching pip dependencies
+      - name: Install requirements
+        run: pip install wheel
       - name: Build python wheel
         run: python setup.py bdist_wheel -d dist
       - name: Setup Node.js
