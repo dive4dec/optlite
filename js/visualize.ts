@@ -131,7 +131,7 @@ OptFrontend
         if (errorLineNo) {
           // highlight the faulting line in the test case pane itself
           if (errorLineNo !== undefined &&
-            errorLineNo != NaN &&
+            // errorLineNo != NaN &&
             errorLineNo >= firstTestLine) {
             var adjustedErrorLineNo = errorLineNo - firstTestLine;
 

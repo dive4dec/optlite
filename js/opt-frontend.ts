@@ -491,7 +491,9 @@ export class OptFrontend extends AbstractBaseFrontend {
   handleUncaughtException(trace) {
     if (trace.length == 1 && trace[0].line) {
       var errorLineNo = trace[0].line - 1; /* Ace lines are zero-indexed */
-      if (errorLineNo !== undefined && errorLineNo != NaN) {
+      if (errorLineNo !== undefined 
+        // && errorLineNo != NaN
+        ) {
         // highlight the faulting line
         var s = this.pyInputAceEditor.getSession();
         s.setAnnotations([{
