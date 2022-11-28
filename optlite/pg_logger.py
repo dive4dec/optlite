@@ -77,6 +77,8 @@ PYTUTOR_HIDE_STR = '#pythontutor_hide:'
 # - also accepts shell globs, just like PYTUTOR_HIDE_STR
 PYTUTOR_INLINE_TYPE_STR = '#pythontutor_hide_type:'
 
+PYTUTOR_SKIP_STR = '#pythontutor_skip:'
+
 CLASS_RE = re.compile('class\s+')
 
 # copied-pasted from translate() in https://github.com/python/cpython/blob/2.7/Lib/fnmatch.py
@@ -613,6 +615,8 @@ class PGLogger(bdb.Bdb):
                                   # the contents of PYTUTOR_HIDE_STR
         self.types_to_inline = set() # a set of regex match objects derived from PYTUTOR_INLINE_TYPE_STR
 
+        self.funcs_to_skip = set()
+
         self.prev_lineno = -1 # keep track of previous line just executed
 
 
@@ -622,6 +626,11 @@ class PGLogger(bdb.Bdb):
                 return True
         return False
 
+    def should_skip_func(self, func_line):
+        for func in self.funcs_to_skip:
+            if func in func_line:
+                return True
+        return False
 
     def get_user_stdout(self):
         def encode_stringio(sio):
@@ -872,6 +881,9 @@ class PGLogger(bdb.Bdb):
               self.wait_for_return_stack = self.get_stack_code_IDs()
               return
 
+            if self.should_skip_func(func_line.lstrip()): # ignore leading spaces
+              self.wait_for_return_stack = self.get_stack_code_IDs()
+              return
 
         self.encoder.reset_heap() # VERY VERY VERY IMPORTANT,
                                   # or else we won't properly capture heap object mutations in the trace!
@@ -1372,6 +1384,11 @@ class PGLogger(bdb.Bdb):
             listed_types = [compileGlobMatch(e.strip()) for e in listed_types.split(',')]
             self.types_to_inline.update(listed_types)
 
+          if line.startswith(PYTUTOR_SKIP_STR):
+            skipped_funcs = line[len(PYTUTOR_SKIP_STR):]
+            # remember to call strip() -> compileGlobMatch()
+            skipped_funcs = [e.strip() for e in skipped_funcs.split(',')]
+            self.funcs_to_skip.update(skipped_funcs)
 
         # populate an extent map to get more accurate ranges from code
         if self.crazy_mode:
