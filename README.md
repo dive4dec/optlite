@@ -31,6 +31,7 @@ git clone https://github.com/dive4dec/optlite
 Setup a python environment. In the root folder of the repository, run the following to create the python wheel file under `dist` folder.
 
 ```
+pip install -r optlite/requirements.txt
 python setup.py bdist_wheel -d dist
 ```
 
