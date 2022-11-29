@@ -81,6 +81,8 @@ PYTUTOR_SKIP_STR = '#pythontutor_skip:'
 
 CLASS_RE = re.compile('class\s+')
 
+FUNC_RE = re.compile('def\s+')
+
 # copied-pasted from translate() in https://github.com/python/cpython/blob/2.7/Lib/fnmatch.py
 def globToRegex(pat):
     """Translate a shell PATTERN to a regular expression.
@@ -626,11 +628,8 @@ class PGLogger(bdb.Bdb):
                 return True
         return False
 
-    def should_skip_func(self, func_line):
-        for func in self.funcs_to_skip:
-            if func in func_line:
-                return True
-        return False
+    def should_skip_func(self, func_name):
+        return func_name in self.funcs_to_skip
 
     def get_user_stdout(self):
         def encode_stringio(sio):
@@ -881,7 +880,7 @@ class PGLogger(bdb.Bdb):
               self.wait_for_return_stack = self.get_stack_code_IDs()
               return
 
-            if self.should_skip_func(func_line.lstrip()): # ignore leading spaces
+            if FUNC_RE.match(func_line.lstrip()) and self.should_skip_func(top_frame.f_code.co_name): # ignore leading spaces
               self.wait_for_return_stack = self.get_stack_code_IDs()
               return
 
