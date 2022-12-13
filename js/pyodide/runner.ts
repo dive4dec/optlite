@@ -52,18 +52,22 @@ const asyncRun = (() => {
   let id = 0; // identify each visualization by a non-negative id
   return (script: string, rawInputLst: string[], options: any) => {
     id = (id + 1) % Number.MAX_SAFE_INTEGER;
-    return new Promise((onSuccess) => {
-      init.then(() => {
+    return (function(id){
+      init = init.then(() => {
         // visualize after initialize
-        callbacks[id] = onSuccess;
-        pyodideWorker.postMessage({
-          ...options,
-          script: script,
-          rawInputLst: rawInputLst,
-          id,
-        });  
-      })
-    });
+        return new Promise((onSuccess) => {
+          callbacks[id] = onSuccess;
+          pyodideWorker.postMessage({
+            ...options,
+            script: script,
+            rawInputLst: rawInputLst,
+            id: id
+          });
+        })
+      });
+      return init;
+    })(id);
+    
   };
 })();
 
