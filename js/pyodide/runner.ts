@@ -1,4 +1,5 @@
 import { OptLite, combineDefaults } from './global'
+import { default as optlite } from '../../dist/optlite-0.0.4-py2.py3-none-any.whl';
 
 const pyodideWorker = new Worker(new URL("./optworker.js", import.meta.url));
 const callbacks = {};
@@ -8,8 +9,8 @@ const callbacks = {};
 const initWorker = (() => {
   let id = -1; // use -ve job id for initialization
   combineDefaults( OptLite, {
-    pyodide: "https://cdn.jsdelivr.net/pyodide/v0.20.0/full/pyodide.js", // pyodide url to load
-    optlite: "optlite", // the required optlite package to install using micropip.
+    pyodide: "https://cdn.jsdelivr.net/pyodide/v0.21.3/full/pyodide.js", // pyodide url to load
+    optlite: optlite, //"optlite-0.0.4-py2.py3-none-any.whl", // the required optlite package to install using micropip.
     // Use the latest version on pypi by default but can be changed to point to 
     // - other versions such as "optlite==0.0.1", or 
     // - a wheel file such as "dist/optlite-0.0.1-py2.py3-none-any.whl".

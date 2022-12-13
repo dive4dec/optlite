@@ -107,7 +107,14 @@ module.exports = {
             { 
               test: /\.hbs$/, 
               loader: "handlebars-loader" 
-            }
+            },
+            {
+              test: /\.whl$/,
+              type: 'asset/resource',
+              generator: {
+                filename: 'static/[name][ext]'
+              }
+            },  // Python wheel
         ]
     },
 

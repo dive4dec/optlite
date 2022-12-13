@@ -433,7 +433,9 @@ export class OptLiveFrontend extends OptFrontend {
   handleUncaughtException(trace) {
     if (trace.length == 1 && trace[0].line) {
       var errorLineNo = trace[0].line - 1; /* Ace lines are zero-indexed */
-      if (errorLineNo !== undefined && errorLineNo != NaN) {
+      if (errorLineNo !== undefined 
+        // && errorLineNo != NaN
+        ) {
         this.removeAllGutterDecorations();
 
         if (this.myVisualizer) {
