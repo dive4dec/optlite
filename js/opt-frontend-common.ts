@@ -217,12 +217,21 @@ export abstract class AbstractBaseFrontend {
     }
   }
 
-  getBaseBackendOptionsObj() {
+  async getBaseBackendOptionsObj() {
+
+    var preamble = '';
+    var url = $('#preambleLink').val();
+    var text = await fetch(url)
+      .then(response => response.text())
+      .catch(error => '');
+    preamble = text;
+
     var ret = {
       // cumulative_mode: ($('#cumulativeModeSelector').val() == 'true'),
       // heap_primitives: ($('#heapPrimitivesSelector').val() == 'true'),
       show_only_outputs: false, // necessary for legacy reasons, ergh!
-      origin: this.originFrontendJsFile
+      origin: this.originFrontendJsFile,
+      preamble: preamble
     };
     return ret;
   }
@@ -356,8 +365,8 @@ export abstract class AbstractBaseFrontend {
     //   frontendOptionsObj.lang = 'py3';
     // }  
     //   else if (pyState === 'pyodide') {
-      frontendOptionsObj.lang = 'pyodide';
-   // } 
+    frontendOptionsObj.lang = 'pyodide';
+    // } 
     // else if (pyState === 'java') {
     //   // TODO: should we still keep this exceptional case?
     //   frontendOptionsObj.disableHeapNesting = true; // never nest Java objects, seems like a good default
@@ -396,13 +405,13 @@ export abstract class AbstractBaseFrontend {
 
     // everything below here is an ajax (async) call to the server ...
     //if (frontendOptionsObj.lang === 'pyodide') {
-      //this.pyodideRunner.runCode(callbackWrapper);
-      let call = async () => {
-        let result: any = await asyncRun(codeToExec, this.rawInputLst, {});
-        callbackWrapper(JSON.parse(result.results));
-      }
-      call();
-   // } 
+    //this.pyodideRunner.runCode(callbackWrapper);
+    let call = async () => {
+      let result: any = await asyncRun(codeToExec, this.rawInputLst, backendOptionsObj);
+      callbackWrapper(JSON.parse(result.results));
+    }
+    call();
+    // } 
     // else if (!this.hostConfig.isK8s) {
     //   //assert (pyState !== '2' && pyState !== '3');
     //   /* 
@@ -495,7 +504,7 @@ export abstract class AbstractBaseFrontend {
     //   });
 
     // } else if (api_endpoint) { // same origin in production
-   
+
     //   var retryOnBackupServer = () => {
     //     // first log a #TryBackup error entry:
     //     this.setFronendError(["Main server is busy or has errors; re-trying using backup server " + this.hostConfig.backupHttpServerRoot + " ... [#TryBackup]"]);

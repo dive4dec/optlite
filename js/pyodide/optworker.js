@@ -26,8 +26,8 @@ self.onmessage = async (event) => {
       await self.pyodide.loadPackagesFromImports(self.script);
       results = await self.pyodide.runPythonAsync(`
       import optlite
-      from js import script, rawInputLst
-      optlite.exec_script(script, rawInputLst)
+      from js import script, rawInputLst, preamble
+      optlite.exec_script(script, rawInputLst, preamble)
       `);
     }
     self.postMessage({ results, id });

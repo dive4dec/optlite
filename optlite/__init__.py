@@ -3,7 +3,7 @@ from . import pg_logger
 from ._version import __version__
 
 
-def exec_script(code, rawInputLst):
+def exec_script(code, rawInputLst, preamble=''):
     def jsonp(request, dictionary):
         if (request):
             return "%s(%s)" % (request, dictionary)
@@ -13,12 +13,13 @@ def exec_script(code, rawInputLst):
         ret = dict(code=input_code, trace=output_trace)
         json_output = json.dumps(ret, indent=None)
         out_s.write(json_output)
-
     out_s = io.StringIO()
+
     pg_logger.exec_script_str_local(code,
                                     rawInputLst,
                                     False,
                                     False,
                                     json_finalizer,
-                                    allow_all_modules=True)
+                                    allow_all_modules=True,
+                                    preamble=preamble)
     return jsonp(False, out_s.getvalue())

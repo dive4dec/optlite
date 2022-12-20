@@ -274,7 +274,7 @@ export class ExecutionVisualizer {
   //          'py3anaconda' for Python 3 with Anaconda
   //          [default is Python-style labels]
   constructor(domRootID, dat, params) {
-    this.curInputCode = dat.code.rtrim(); // kill trailing spaces
+    this.curInputCode = (dat.code.main_code ?? dat.code).rtrim(); // kill trailing spaces
     this.params = params;
     this.curTrace = dat.trace;
 
