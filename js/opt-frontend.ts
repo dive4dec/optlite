@@ -677,7 +677,8 @@ export class OptFrontend extends AbstractBaseFrontend {
       py: $('#pythonVersionSelector').val(),
       /* ALWAYS JSON serialize rawInputLst, even if it's empty! */
       rawInputLstJSON: JSON.stringify(this.rawInputLst),
-      curInstr: this.myVisualizer ? this.myVisualizer.curInstr : undefined
+      curInstr: this.myVisualizer ? this.myVisualizer.curInstr : undefined,
+      preamble: $('#preambleLink').val()
     };
 
     // keep this really clean by avoiding undefined values
@@ -761,6 +762,10 @@ export class OptFrontend extends AbstractBaseFrontend {
       queryStrOptions.appMode == 'visualize' /* deprecated */) &&
       queryStrOptions.preseededCode /* jump to 'display' mode only with preseeded code */) {
       this.executeCode(this.preseededCurInstr); // will switch to 'display' mode
+    }
+
+    if (queryStrOptions.preamble) {
+      $('#preambleLink').val(queryStrOptions.preamble)
     }
     $.bbq.removeState(); // clean up the URL no matter what
   }

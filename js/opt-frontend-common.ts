@@ -205,7 +205,8 @@ export abstract class AbstractBaseFrontend {
       codcastFile: $.bbq.getState('codcast'), // load a codcast file created using ../recorder.html
       codeopticonSession: $.bbq.getState('cosession'),
       codeopticonUsername: $.bbq.getState('couser'),
-      testCasesLst: testCasesLstJSON ? $.parseJSON(testCasesLstJSON) : undefined
+      testCasesLst: testCasesLstJSON ? $.parseJSON(testCasesLstJSON) : undefined,
+      preamble: $.bbq.getState('preamble')
     };
   }
 
