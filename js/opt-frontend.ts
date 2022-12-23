@@ -303,7 +303,7 @@ export class OptFrontend extends AbstractBaseFrontend {
 
   setAceMode() {
     //var selectorVal = $('#pythonVersionSelector').val();
-   // var mod;
+    //var mod;
     //var tabSize = 2;
     //var editorVal = $.trim(this.pyInputGetValue());
 
@@ -331,9 +331,9 @@ export class OptFrontend extends AbstractBaseFrontend {
     // } else {
     //   assert(selectorVal === '2' || selectorVal == '3' || selectorVal ==
     //     'py3anaconda' || selectorVal == 'pyodide');
-      let mod = 'python';
-      let tabSize = 4; // PEP8 style standards
-   // }
+    let mod = 'python';
+    let tabSize = 4; // PEP8 style standards
+    // }
     assert(mod);
 
     var s = this.pyInputAceEditor.getSession();
@@ -352,10 +352,10 @@ export class OptFrontend extends AbstractBaseFrontend {
     // }
 
     //if (selectorVal === 'js' || selectorVal === '2' || selectorVal === '3' || selectorVal === 'pyodide') {
-      $("#liveModeBtn").show();
-   // } else {
-   //   $("#liveModeBtn").hide();
-   // }
+    $("#liveModeBtn").show();
+    // } else {
+    //   $("#liveModeBtn").hide();
+    // }
 
     this.clearFrontendError();
   }
@@ -391,7 +391,7 @@ export class OptFrontend extends AbstractBaseFrontend {
     super.executeCodeFromScratch();
   }
 
-  executeCode(forceStartingInstr = 0, forceRawInputLst = undefined) {
+  async executeCode(forceStartingInstr = 0, forceRawInputLst = undefined) {
     // if you're in display mode, kick back into edit mode before executing
     // or else the display might not refresh properly ... ugh krufty
     if (this.appMode != 'edit') {
@@ -402,7 +402,7 @@ export class OptFrontend extends AbstractBaseFrontend {
       this.rawInputLst = forceRawInputLst;
     }
 
-    var backendOptionsObj = this.getBaseBackendOptionsObj();
+    var backendOptionsObj = await this.getBaseBackendOptionsObj();
     var frontendOptionsObj = this.getBaseFrontendOptionsObj();
     frontendOptionsObj.startingInstruction = forceStartingInstr;
 
@@ -491,9 +491,9 @@ export class OptFrontend extends AbstractBaseFrontend {
   handleUncaughtException(trace) {
     if (trace.length == 1 && trace[0].line) {
       var errorLineNo = trace[0].line - 1; /* Ace lines are zero-indexed */
-      if (errorLineNo !== undefined 
+      if (errorLineNo !== undefined
         // && errorLineNo != NaN
-        ) {
+      ) {
         // highlight the faulting line
         var s = this.pyInputAceEditor.getSession();
         s.setAnnotations([{
@@ -677,7 +677,8 @@ export class OptFrontend extends AbstractBaseFrontend {
       py: $('#pythonVersionSelector').val(),
       /* ALWAYS JSON serialize rawInputLst, even if it's empty! */
       rawInputLstJSON: JSON.stringify(this.rawInputLst),
-      curInstr: this.myVisualizer ? this.myVisualizer.curInstr : undefined
+      curInstr: this.myVisualizer ? this.myVisualizer.curInstr : undefined,
+      preamble: $('#preambleLink').val()
     };
 
     // keep this really clean by avoiding undefined values
@@ -761,6 +762,10 @@ export class OptFrontend extends AbstractBaseFrontend {
       queryStrOptions.appMode == 'visualize' /* deprecated */) &&
       queryStrOptions.preseededCode /* jump to 'display' mode only with preseeded code */) {
       this.executeCode(this.preseededCurInstr); // will switch to 'display' mode
+    }
+
+    if (queryStrOptions.preamble) {
+      $('#preambleLink').val(queryStrOptions.preamble)
     }
     $.bbq.removeState(); // clean up the URL no matter what
   }

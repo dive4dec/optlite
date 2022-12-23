@@ -81,6 +81,8 @@ PYTUTOR_SKIP_STR = '#pythontutor_skip:'
 
 CLASS_RE = re.compile('class\s+')
 
+FUNC_RE = re.compile('def\s+')
+
 # copied-pasted from translate() in https://github.com/python/cpython/blob/2.7/Lib/fnmatch.py
 def globToRegex(pat):
     """Translate a shell PATTERN to a regular expression.
@@ -626,11 +628,8 @@ class PGLogger(bdb.Bdb):
                 return True
         return False
 
-    def should_skip_func(self, func_line):
-        for func in self.funcs_to_skip:
-            if func in func_line:
-                return True
-        return False
+    def should_skip_func(self, func_name):
+        return func_name in self.funcs_to_skip
 
     def get_user_stdout(self):
         def encode_stringio(sio):
@@ -881,7 +880,7 @@ class PGLogger(bdb.Bdb):
               self.wait_for_return_stack = self.get_stack_code_IDs()
               return
 
-            if self.should_skip_func(func_line.lstrip()): # ignore leading spaces
+            if FUNC_RE.match(func_line.lstrip()) and self.should_skip_func(top_frame.f_code.co_name): # ignore leading spaces
               self.wait_for_return_stack = self.get_stack_code_IDs()
               return
 
@@ -1355,7 +1354,7 @@ class PGLogger(bdb.Bdb):
         self.forget()
 
 
-    def _runscript(self, script_str):
+    def _runscript(self, script_str, preamble):
         self.executed_script = script_str
         self.executed_script_lines = self.executed_script.splitlines()
 
@@ -1472,7 +1471,15 @@ class PGLogger(bdb.Bdb):
                 # http://code.activestate.com/recipes/82234-importing-a-dynamically-generated-module/
                 new_m = imp.new_module(mn)
                 exec(self.custom_modules[mn], new_m.__dict__) # exec in custom globals
-                user_globals.update(new_m.__dict__)
+                filtered = filter(lambda entry: not entry[0].startswith('__'), new_m.__dict__.items())
+                user_globals.update(filtered)
+        # didn't implement preamble with self.custom_modules
+        # because self.custom_modules has other processings.
+        if preamble:
+            pre_m = imp.new_module('preamble')
+            exec(preamble, pre_m.__dict__) # exec in custom globals
+            filtered = filter(lambda entry: not entry[0].startswith('__'), pre_m.__dict__.items())
+            user_globals.update(filtered)
 
         # important: do this LAST to get precedence over values in custom_modules
         user_globals.update({"__name__"    : "__main__",
@@ -1699,7 +1706,7 @@ def exec_script_str(script_str, raw_input_lst, options_json, finalizer_func):
 # [optional] probe_exprs is a list of strings representing
 # expressions whose values to probe at each step (advanced)
 def exec_script_str_local(script_str, raw_input_lst, cumulative_mode, heap_primitives, finalizer_func,
-                          probe_exprs=None, allow_all_modules=False):
+                          probe_exprs=None, allow_all_modules=False, preamble=''):
   logger = PGLogger(cumulative_mode, heap_primitives, False, finalizer_func,
                     disable_security_checks=True,
                     allow_all_modules=allow_all_modules,
@@ -1713,7 +1720,7 @@ def exec_script_str_local(script_str, raw_input_lst, cumulative_mode, heap_primi
     input_string_queue = [str(e) for e in iter(raw_input_lst)]
 
   try:
-    logger._runscript(script_str)
+    logger._runscript(script_str, preamble)
   except bdb.BdbQuit:
     pass
   finally:
