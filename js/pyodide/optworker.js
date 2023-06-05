@@ -23,6 +23,7 @@ self.onmessage = async (event) => {
           await micropip.install(p)
       `)
     } else { // visualize code
+      await self.pyodide.loadPackagesFromImports(self.preamble);
       await self.pyodide.loadPackagesFromImports(self.script);
       results = await self.pyodide.runPythonAsync(`
       import optlite
@@ -32,6 +33,6 @@ self.onmessage = async (event) => {
     }
     self.postMessage({ results, id });
   } catch (error) {
-    self.postMessage({ error: "Failed to run code: "+error.message, id });
+    self.postMessage({ error: "Failed to run code: " + error.message, id });
   }
 };

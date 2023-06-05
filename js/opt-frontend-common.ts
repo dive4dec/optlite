@@ -222,10 +222,11 @@ export abstract class AbstractBaseFrontend {
 
     var preamble = '';
     var url = $('#preambleLink').val();
-    var text = await fetch(url)
+    if (url !== '') {
+      preamble = await fetch(url)
       .then(response => response.text())
       .catch(error => '');
-    preamble = text;
+    }
 
     var ret = {
       // cumulative_mode: ($('#cumulativeModeSelector').val() == 'true'),
