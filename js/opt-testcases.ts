@@ -140,7 +140,9 @@ export class OptTestcases {
     te.focus();
 
     function runOrVizTestCase(isViz /* true for visualize, false for run */) {
-      $("#runAllTestsButton,.runTestCase,.vizTestCase").attr('disabled', true);
+      $("#runAllTestsButton").attr('disabled', true);
+      $("#runTestCase_" + id).attr('disabled', true);
+      $("#vizTestCase_" + id).attr('disabled', true);
       var e = ace.edit('testCaseEditor_' + id);
       e.getSession().clearAnnotations();
       $('#outputTd_' + id).html('');

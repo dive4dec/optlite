@@ -115,9 +115,9 @@ OptFrontend
     }
   }
 
-  runTestCase(id, codeToExec, firstTestLine) {
+  async runTestCase(id, codeToExec, firstTestLine) {
     // adapted from executeCode in opt-frontend.js
-    var backendOptionsObj = this.getBaseBackendOptionsObj();
+    var backendOptionsObj = await this.getBaseBackendOptionsObj();
     var frontendOptionsObj = this.getBaseFrontendOptionsObj();
 
     (backendOptionsObj as any).run_test_case = true; // just so we can see this in server logs
@@ -184,9 +184,9 @@ OptFrontend
   // TODO: properly handle and display errors when there's a syntax
   // error ... right now it displays as a syntax error in the main pane,
   // which can be confusing
-  vizTestCase(id, codeToExec, firstTestLine) {
+  async vizTestCase(id, codeToExec, firstTestLine) {
     // adapted from executeCode in opt-frontend.js
-    var backendOptionsObj = this.getBaseBackendOptionsObj();
+    var backendOptionsObj = await this.getBaseBackendOptionsObj();
     var frontendOptionsObj = this.getBaseFrontendOptionsObj();
 
     (backendOptionsObj as any).viz_test_case = true; // just so we can see this in server logs

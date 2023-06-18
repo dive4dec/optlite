@@ -67,6 +67,12 @@ table#pyOutputPane {
   border: 1px solid #ddd;
 }
 
+#preambleInputPane {
+  margin-top: 5px;
+  font-size: 12pt;
+  border: 1px solid #ddd;
+}
+
 #codeInputWarnings {
   margin-bottom: 8px;
 }
