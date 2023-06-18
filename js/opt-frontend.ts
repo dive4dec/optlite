@@ -67,6 +67,7 @@ function sanitizeURL(s) {
 export class OptFrontend extends AbstractBaseFrontend {
   originFrontendJsFile: string = 'opt-frontend.js';
   pyInputAceEditor = undefined; // Ace editor object that contains the user's code
+  pyPreambleAceEditor = undefined; // Ace editor object that contains the preamble code
 
   // some subclasses use these, so put them in the superclass
   activateSyntaxErrorSurvey: boolean = true;
@@ -101,6 +102,7 @@ export class OptFrontend extends AbstractBaseFrontend {
     });
 
     this.initAceEditor(420);
+    this.initPreambleAceEditor(420);
 
     // for some weird reason, jQuery doesn't work here:
     //   $(window).bind("hashchange"
@@ -301,6 +303,59 @@ export class OptFrontend extends AbstractBaseFrontend {
     this.pyInputAceEditor.focus();
   }
 
+  initPreambleAceEditor(height: number) {
+    assert(!this.pyPreambleAceEditor);
+    this.pyPreambleAceEditor = ace.edit('preambleInputPane');
+    var s = this.pyPreambleAceEditor.getSession();
+    // tab -> 4 spaces
+    s.setTabSize(4);
+    s.setUseSoftTabs(true);
+    // disable extraneous indicators:
+    s.setFoldStyle('manual'); // no code folding indicators
+    s.getDocument().setNewLineMode('unix'); // canonicalize all newlines to unix format
+    this.pyPreambleAceEditor.setHighlightActiveLine(false);
+    this.pyPreambleAceEditor.setShowPrintMargin(false);
+    this.pyPreambleAceEditor.setBehavioursEnabled(false);
+    this.pyPreambleAceEditor.$blockScrolling = Infinity; // kludgy to shut up weird warnings
+
+    // auto-grow height as fit
+    this.pyPreambleAceEditor.setOptions({ minLines: 18, maxLines: 1000 });
+
+    $('#preambleInputPane').css('width', '700px');
+    $('#preambleInputPane').css('height', height + 'px'); // VERY IMPORTANT so that it works on I.E., ugh!
+
+    // this.initDeltaObj();
+    this.pyPreambleAceEditor.on('change', (e) => {
+      // 2017-11-21: convert all tabs to 4 spaces so that when you paste
+      // in code from somewhere else that contains tabs, instantly
+      // change all those tabs to spaces. note that all uses of 'tab' key
+      // within the Ace editor on this page will result in spaces (i.e.,
+      // "soft tabs")
+      var curVal = this.pyInputGetValue();
+      if (curVal.indexOf('\t') >= 0) {
+        this.pyInputSetValue(curVal.replace(allTabsRE, '    '));
+        console.log("Converted all tabs to spaces");
+      }
+
+      $.doTimeout('pyPreambleAceEditorChange', CODE_SNAPSHOT_DEBOUNCE_MS, this.snapshotCodeDiff.bind(this)); // debounce
+
+      // starting on 2018-03-14 -- do NOT clear frontend errors and
+      // annotations when you edit the code, since you may still want to
+      // see the old error messages ... commented out these two lines:
+      //this.clearFrontendError();
+      //s.clearAnnotations();
+    });
+
+    // don't do real-time syntax checks:
+    // https://github.com/ajaxorg/ace/wiki/Syntax-validation
+    s.setOption("useWorker", false);
+
+    let mod = 'python';
+    s.setMode("ace/mode/" + mod);
+    // clear all error displays when switching modes
+    s.clearAnnotations();
+  }
+
   setAceMode() {
     //var selectorVal = $('#pythonVersionSelector').val();
     //var mod;
@@ -364,6 +419,10 @@ export class OptFrontend extends AbstractBaseFrontend {
     return this.pyInputAceEditor.getValue();
   }
 
+  pyPreambleGetValue() {
+    return this.pyPreambleAceEditor.getValue();
+  }
+
   pyInputSetValue(dat) {
     this.pyInputAceEditor.setValue(dat.rtrim() /* kill trailing spaces */,
       -1 /* do NOT select after setting text */);
@@ -372,6 +431,13 @@ export class OptFrontend extends AbstractBaseFrontend {
     // also scroll to top to make the UI more usable on smaller monitors
     // TODO: this has a global impact on the document, so breaks modularity?
     $(document).scrollTop(0);
+  }
+
+  pyPreambleSetValue(dat) {
+    this.pyPreambleAceEditor.setValue(dat.rtrim() /* kill trailing spaces */,
+      -1 /* do NOT select after setting text */);
+    $('#urlOutput,#urlOutputShortened,#embedCodeOutput').val('');
+    this.clearFrontendError();
   }
 
   pyInputGetScrollTop() {
@@ -678,7 +744,8 @@ export class OptFrontend extends AbstractBaseFrontend {
       /* ALWAYS JSON serialize rawInputLst, even if it's empty! */
       rawInputLstJSON: JSON.stringify(this.rawInputLst),
       curInstr: this.myVisualizer ? this.myVisualizer.curInstr : undefined,
-      preamble: $('#preambleLink').val()
+      preambleLink: $('#preambleLink').val(),
+      preamble: this.pyPreambleGetValue()
     };
 
     // keep this really clean by avoiding undefined values
@@ -764,9 +831,14 @@ export class OptFrontend extends AbstractBaseFrontend {
       this.executeCode(this.preseededCurInstr); // will switch to 'display' mode
     }
 
-    if (queryStrOptions.preamble) {
-      $('#preambleLink').val(queryStrOptions.preamble)
+    if (queryStrOptions.preambleLink) {
+      $('#preambleLink').val(queryStrOptions.preambleLink)
     }
+
+    if (queryStrOptions.preamble) {
+      this.pyPreambleSetValue(queryStrOptions.preamble);
+    }
+
     $.bbq.removeState(); // clean up the URL no matter what
   }
 

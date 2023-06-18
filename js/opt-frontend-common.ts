@@ -206,6 +206,7 @@ export abstract class AbstractBaseFrontend {
       codeopticonSession: $.bbq.getState('cosession'),
       codeopticonUsername: $.bbq.getState('couser'),
       testCasesLst: testCasesLstJSON ? $.parseJSON(testCasesLstJSON) : undefined,
+      preambleLink: $.bbq.getState('preambleLink'),
       preamble: $.bbq.getState('preamble')
     };
   }
@@ -220,12 +221,14 @@ export abstract class AbstractBaseFrontend {
 
   async getBaseBackendOptionsObj() {
 
-    var preamble = '';
+    var preamble = (this as any).pyPreambleAceEditor ? (this as any).pyPreambleAceEditor.getValue() : '';
     var url = $('#preambleLink').val();
     if (url !== '') {
-      preamble = await fetch(url)
+      let content = await fetch(url)
       .then(response => response.text())
       .catch(error => '');
+      preamble += '\n'
+      preamble += content;
     }
 
     var ret = {
